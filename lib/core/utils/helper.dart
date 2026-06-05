@@ -17,13 +17,13 @@ class AppHelper {
     );
   }
 
-  static String formatDate(String? dateStr) {
-    if (dateStr == null) return '';
+  static String formatDate(DateTime? dt) {
+    if (dt == null) return '';
     try {
-      final dt = DateTime.parse(dateStr).toLocal();
-      return '${dt.day} ${_monthName(dt.month)} ${dt.year}';
+      final local = dt.toLocal();
+      return '${local.day} ${_monthName(local.month)} ${local.year}';
     } catch (_) {
-      return dateStr;
+      return '';
     }
   }
 

@@ -17,15 +17,15 @@ class ArticleModelAdapter extends TypeAdapter<ArticleModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ArticleModel(
-      source: fields[0] as String?,
-      author: fields[1] as String?,
-      title: fields[2] as String?,
-      description: fields[3] as String?,
-      url: fields[4] as String?,
-      urlToImage: fields[5] as String?,
-      publishedAt: fields[6] as String?,
-      content: fields[7] as String?,
-      category: fields[8] as String?,
+      id: fields[0] as String,
+      titleBn: fields[1] as String,
+      titleEn: fields[2] as String,
+      contentBn: fields[3] as String,
+      contentEn: fields[4] as String,
+      imageUrl: fields[5] as String,
+      category: fields[6] as String,
+      district: fields[7] as String,
+      publishedAt: fields[8] as DateTime,
     );
   }
 
@@ -34,23 +34,23 @@ class ArticleModelAdapter extends TypeAdapter<ArticleModel> {
     writer
       ..writeByte(9)
       ..writeByte(0)
-      ..write(obj.source)
+      ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.author)
+      ..write(obj.titleBn)
       ..writeByte(2)
-      ..write(obj.title)
+      ..write(obj.titleEn)
       ..writeByte(3)
-      ..write(obj.description)
+      ..write(obj.contentBn)
       ..writeByte(4)
-      ..write(obj.url)
+      ..write(obj.contentEn)
       ..writeByte(5)
-      ..write(obj.urlToImage)
+      ..write(obj.imageUrl)
       ..writeByte(6)
-      ..write(obj.publishedAt)
+      ..write(obj.category)
       ..writeByte(7)
-      ..write(obj.content)
+      ..write(obj.district)
       ..writeByte(8)
-      ..write(obj.category);
+      ..write(obj.publishedAt);
   }
 
   @override

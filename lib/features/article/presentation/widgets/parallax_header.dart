@@ -32,9 +32,9 @@ class ParallaxHeader extends StatelessWidget {
             );
           },
           child: Hero(
-            tag: article.url ?? article.title ?? '',
+            tag: article.url,
             child: CachedNetworkImage(
-              imageUrl: article.urlToImage ?? '',
+              imageUrl: article.urlToImage,
               fit: BoxFit.cover,
               placeholder: (_, _) => Container(color: Colors.grey.shade900),
               errorWidget: (_, _, _) => Container(

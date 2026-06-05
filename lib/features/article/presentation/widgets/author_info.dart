@@ -32,8 +32,8 @@ class AuthorInfo extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  article.author?.isNotEmpty == true
-                      ? article.author!
+                  article.author.isNotEmpty
+                      ? article.author
                       : 'Unknown Author',
                   style: textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w700,
@@ -41,7 +41,7 @@ class AuthorInfo extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${article.source ?? ''} · ${AppHelper.formatDate(article.publishedAt)}',
+                  '${article.source} · ${AppHelper.formatDate(article.publishedAt)}',
                   style: textTheme.bodySmall?.copyWith(
                     color: scheme.onSurface.withValues(alpha: 0.5),
                   ),

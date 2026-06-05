@@ -4,7 +4,5 @@ import '../repository/category_repository.dart';
 
 final categoryNewsProvider = FutureProvider.autoDispose
     .family<List<ArticleModel>, String>((ref, category) {
-  return ref.watch(categoryRepositoryProvider).fetchByCategory(
-        category: category,
-      );
+  return ref.watch(categoryRepositoryProvider).fetchArticlesByCategory(category);
 });

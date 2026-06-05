@@ -245,19 +245,16 @@ class _TabBar extends StatelessWidget {
   final String selectedCategory;
   final ValueChanged<String> onCategoryChanged;
 
-  static const _tabs = ['Top', 'Business', 'Technology', 'Sports', 'Health'];
+  static const _tabs = ['Home', 'Latest', 'Trending', 'Video', 'Podcast'];
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       height: 44,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: _tabs.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 24),
-        itemBuilder: (context, i) {
-          final tab = _tabs[i];
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: _tabs.map((tab) {
           final selected = selectedCategory == tab;
           return GestureDetector(
             onTap: () => onCategoryChanged(tab),
@@ -292,7 +289,7 @@ class _TabBar extends StatelessWidget {
               ],
             ),
           );
-        },
+        }).toList(),
       ),
     );
   }
@@ -384,7 +381,7 @@ class _HeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => context.push(
-        '/article/${Uri.encodeComponent(article.url ?? '')}',
+        '/article/${Uri.encodeComponent(article.url)}',
         extra: article.toJson(),
       ),
       child: ClipRRect(
@@ -394,7 +391,7 @@ class _HeroCard extends StatelessWidget {
           children: [
             // ── Background image ──────────────────────────────
             CachedNetworkImage(
-              imageUrl: article.urlToImage ?? '',
+              imageUrl: article.urlToImage,
               fit: BoxFit.cover,
               placeholder: (_, _) =>
                   Container(color: Colors.grey.shade800),
@@ -468,7 +465,7 @@ class _HeroCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      article.title ?? '',
+                      article.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -493,7 +490,7 @@ class _HeroCard extends StatelessWidget {
                         const SizedBox(width: 6),
                         Flexible(
                           child: Text(
-                            article.category ?? 'General',
+                            article.category.isEmpty ? 'General' : article.category,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               color: Color(0xFFE53935),
@@ -528,18 +525,7 @@ class _ExploreCategoriesSection extends StatelessWidget {
   const _ExploreCategoriesSection({required this.onCategoryTap});
   final ValueChanged<String> onCategoryTap;
 
-  static const _categoryColors = [
-    Color(0xFFE53935), // Business - red
-    Color(0xFF1E88E5), // Technology - blue
-    Color(0xFF43A047), // Sports - green
-    Color(0xFF8E24AA), // Entertainment - purple
-    Color(0xFF00ACC1), // Science - teal
-    Color(0xFFE91E63), // Health - pink
-    Color(0xFFFF8F00), // Politics - amber
-    Color(0xFF5E35B1), // World - deep purple
-    Color(0xFF00897B), // Travel - teal-green
-    Color(0xFFD81B60), // Fashion - rose
-  ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -571,55 +557,52 @@ class _ExploreCategoriesSection extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           GridView.builder(
+            padding: EdgeInsets.zero,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 5,
-              mainAxisSpacing: 14,
+              mainAxisSpacing: 8,
               crossAxisSpacing: 8,
-              childAspectRatio: 0.75,
+              childAspectRatio: 1.0,
             ),
             itemCount: cats.length,
             itemBuilder: (context, i) {
               final cat = cats[i];
-              final color = _categoryColors[i % _categoryColors.length];
               return GestureDetector(
                 onTap: () => onCategoryTap(cat['label'] as String),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 52,
-                      height: 52,
-                      decoration: BoxDecoration(
-                        color: color.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                            color: color.withValues(alpha: 0.25), width: 1.2),
-                      ),
-                      child: Icon(
-                        IconData(cat['icon'] as int,
-                            fontFamily: 'MaterialIcons'),
-                        color: color,
-                        size: 26,
-                      ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.08),
+                      width: 1,
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      (cat['label'] as String).toUpperCase(),
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      style: TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.2,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withValues(alpha: 0.75),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        cat['emoji'] as String,
+                        style: const TextStyle(fontSize: 24),
                       ),
-                    ),
-                  ],
+                      const Spacer(),
+                      Text(
+                        (cat['label'] as String).toUpperCase(),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        style: TextStyle(
+                          fontSize: 8,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.1,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ).animate().fadeIn(
                     delay: Duration(milliseconds: 50 * i),
@@ -627,7 +610,7 @@ class _ExploreCategoriesSection extends StatelessWidget {
                   );
             },
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 24),
         ],
       ),
     );
@@ -648,7 +631,7 @@ class _LatestNewsCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () => context.push(
-        '/article/${Uri.encodeComponent(article.url ?? '')}',
+        '/article/${Uri.encodeComponent(article.url)}',
         extra: article.toJson(),
       ),
       child: Container(
@@ -672,7 +655,7 @@ class _LatestNewsCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: CachedNetworkImage(
-                imageUrl: article.urlToImage ?? '',
+                imageUrl: article.urlToImage,
                 width: 90,
                 height: 78,
                 fit: BoxFit.cover,
@@ -696,7 +679,7 @@ class _LatestNewsCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    article.title ?? '',
+                    article.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -722,7 +705,7 @@ class _LatestNewsCard extends StatelessWidget {
                       const SizedBox(width: 6),
                       Flexible(
                         child: Text(
-                          article.category ?? 'General',
+                          article.category.isEmpty ? 'General' : article.category,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontSize: 11,

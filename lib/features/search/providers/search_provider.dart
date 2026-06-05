@@ -40,14 +40,13 @@ class SearchNotifier extends StateNotifier<SearchState> {
     }
     state = state.copyWith(isLoading: true, query: query, results: []);
     try {
-      final results = await _repo.search(query);
+      final results = await _repo.searchArticles(query);
       
       final seen = <String>{};
       final uniqueResults = <ArticleModel>[];
       for (final a in results) {
-        final id = a.url ?? a.title ?? '';
-        if (id.isNotEmpty && !seen.contains(id)) {
-          seen.add(id);
+        if (a.id.isNotEmpty && !seen.contains(a.id)) {
+          seen.add(a.id);
           uniqueResults.add(a);
         }
       }

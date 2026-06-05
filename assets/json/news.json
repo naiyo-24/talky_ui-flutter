@@ -1,0 +1,57 @@
+[
+  {
+    "id": "1",
+    "titleBn": "কলকাতায় নতুন উন্নয়ন প্রকল্প",
+    "titleEn": "New Development Project in Kolkata",
+    "category": "West Bengal Development",
+    "district": "Kolkata",
+    "imageUrl": "https://picsum.photos/400/200?random=1",
+    "contentBn": "কলকাতা শহরের উন্নয়নের জন্য নতুন প্রকল্প ঘোষণা করা হয়েছে।",
+    "contentEn": "A new project has been announced for the development of Kolkata city.",
+    "publishedAt": "2026-06-05T10:00:00Z"
+  },
+  {
+    "id": "2",
+    "titleBn": "পশ্চিমবঙ্গ রাজনীতিতে নতুন মোড়",
+    "titleEn": "New Turn in West Bengal Politics",
+    "category": "West Bengal Politics",
+    "district": "Kolkata",
+    "imageUrl": "https://picsum.photos/400/200?random=2",
+    "contentBn": "বিধানসভা নির্বাচনের আগে রাজনৈতিক পারদ চড়ছে।",
+    "contentEn": "The political temperature is rising ahead of the assembly elections.",
+    "publishedAt": "2026-06-05T11:00:00Z"
+  },
+  {
+    "id": "3",
+    "titleBn": "সরকারি প্রকল্পের সুবিধা",
+    "titleEn": "Benefits of Government Schemes",
+    "category": "Government Schemes",
+    "district": "Howrah",
+    "imageUrl": "https://picsum.photos/400/200?random=3",
+    "contentBn": "রাজ্য সরকারের নতুন প্রকল্পের সুবিধা পাবেন লক্ষাধিক মানুষ।",
+    "contentEn": "Lakhs of people will get the benefit of the new scheme of the state government.",
+    "publishedAt": "2026-06-05T09:00:00Z"
+  },
+  {
+    "id": "4",
+    "titleBn": "বিজেপির নতুন কর্মসূচি",
+    "titleEn": "New Program by BJP",
+    "category": "BJP Updates",
+    "district": "Darjeeling",
+    "imageUrl": "https://picsum.photos/400/200?random=4",
+    "contentBn": "পাহাড়ে বিজেপির নতুন রাজনৈতিক কর্মসূচি শুরু হতে চলেছে।",
+    "contentEn": "A new political program of BJP is going to start in the hills.",
+    "publishedAt": "2026-06-05T08:00:00Z"
+  },
+  {
+    "id": "5",
+    "titleBn": "জাতীয় রাজনীতিতে বড় খবর",
+    "titleEn": "Big News in National Politics",
+    "category": "India Politics",
+    "district": "New Delhi",
+    "imageUrl": "https://picsum.photos/400/200?random=5",
+    "contentBn": "দিল্লিতে গুরুত্বপূর্ণ বৈঠক চলছে।",
+    "contentEn": "An important meeting is going on in Delhi.",
+    "publishedAt": "2026-06-05T07:30:00Z"
+  }
+]

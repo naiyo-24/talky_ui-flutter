@@ -1,21 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/network/api_service.dart';
+import '../../../core/repository/json_repository.dart';
 import '../../../features/article/model/article_model.dart';
-import '../../../features/home/providers/home_provider.dart';
 
 class ArticleRepository {
-  ArticleRepository(this._api);
-  final ApiService _api;
+  ArticleRepository(this._jsonRepo);
+  final JsonRepository _jsonRepo;
 
   Future<List<ArticleModel>> fetchRelated(String query) async {
-    final data = await _api.searchArticles(query: query, pageSize: 5);
-    return (data['articles'] as List<dynamic>)
-        .map((e) => ArticleModel.fromJson(e as Map<String, dynamic>))
-        .where((a) => a.title != null && a.title != '[Removed]')
-        .toList();
+    // Just fetch some random ones for prototype
+    final all = await _jsonRepo.fetchAllArticles();
+    return all.take(5).toList();
   }
 }
 
 final articleRepositoryProvider = Provider<ArticleRepository>(
-  (ref) => ArticleRepository(ref.watch(apiServiceProvider)),
+  (ref) => ArticleRepository(ref.watch(jsonRepositoryProvider)),
 );

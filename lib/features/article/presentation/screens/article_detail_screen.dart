@@ -37,7 +37,7 @@ class _ArticleDetailScreenState extends ConsumerState<ArticleDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final isBookmarked = ref.read(bookmarkProvider.notifier)
-        .isBookmarked(_article.url ?? _article.title ?? '');
+        .isBookmarked(_article.url);
     final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -50,24 +50,23 @@ class _ArticleDetailScreenState extends ConsumerState<ArticleDetailScreen> {
           ),
           SliverToBoxAdapter(child: AuthorInfo(article: _article)),
           SliverToBoxAdapter(child: ArticleBody(article: _article)),
-          if (_article.url != null)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                child: FilledButton.icon(
-                  onPressed: () => _launchUrl(_article.url!),
-                  icon: const Icon(Icons.open_in_browser_rounded),
-                  label: const Text('Read Full Article'),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: scheme.primary,
-                    minimumSize: const Size(double.infinity, 52),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: FilledButton.icon(
+                onPressed: () => _launchUrl(_article.url),
+                icon: const Icon(Icons.open_in_browser_rounded),
+                label: const Text('Read Full Article'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: scheme.primary,
+                  minimumSize: const Size(double.infinity, 52),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
                 ),
               ),
             ),
+          ),
           // Related articles
           SliverToBoxAdapter(
             child: Padding(
@@ -81,11 +80,10 @@ class _ArticleDetailScreenState extends ConsumerState<ArticleDetailScreen> {
               ),
             ),
           ),
-          if (_article.title != null)
-            _RelatedArticles(
-              query: _article.title!.split(' ').take(3).join(' '),
-              currentArticleUrl: _article.url ?? _article.title ?? '',
-            ),
+          _RelatedArticles(
+            query: _article.title.split(' ').take(3).join(' '),
+            currentArticleUrl: _article.url,
+          ),
           const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
         ],
       ),
@@ -146,7 +144,7 @@ class _RelatedArticles extends ConsumerWidget {
         final seen = <String>{currentArticleUrl};
         final uniqueArticles = <ArticleModel>[];
         for (final a in articles) {
-          final id = a.url ?? a.title ?? '';
+          final id = a.url;
           if (id.isNotEmpty && !seen.contains(id)) {
             seen.add(id);
             uniqueArticles.add(a);

@@ -10,7 +10,20 @@ class HiveService {
     Hive.registerAdapter(ArticleModelAdapter());
     await Hive.openBox<ArticleModel>(AppConstants.bookmarkBoxName);
     await Hive.openBox<String>(AppConstants.hiveBoxName);
+    await Hive.openBox<dynamic>(AppConstants.settingsBoxName);
   }
+
+  // Settings
+  static Box<dynamic> get settingsBox => Hive.box<dynamic>(AppConstants.settingsBoxName);
+
+  static String get language => settingsBox.get('language', defaultValue: 'bn') as String;
+  static Future<void> setLanguage(String value) => settingsBox.put('language', value);
+
+  static String get district => settingsBox.get('district', defaultValue: '') as String;
+  static Future<void> setDistrict(String value) => settingsBox.put('district', value);
+
+  static bool get isFirstLaunch => settingsBox.get('firstLaunch', defaultValue: true) as bool;
+  static Future<void> setFirstLaunch(bool value) => settingsBox.put('firstLaunch', value);
 
   // Bookmarks
   static Box<ArticleModel> get bookmarkBox =>
@@ -18,14 +31,14 @@ class HiveService {
 
   static List<ArticleModel> getAllBookmarks() => bookmarkBox.values.toList();
 
-  static bool isBookmarked(String url) => bookmarkBox.containsKey(url);
+  static bool isBookmarked(String id) => bookmarkBox.containsKey(id);
 
   static Future<void> addBookmark(ArticleModel article) async {
-    await bookmarkBox.put(article.url ?? article.title, article);
+    await bookmarkBox.put(article.id, article);
   }
 
-  static Future<void> removeBookmark(String url) async {
-    await bookmarkBox.delete(url);
+  static Future<void> removeBookmark(String id) async {
+    await bookmarkBox.delete(id);
   }
 
   // Offline Cache

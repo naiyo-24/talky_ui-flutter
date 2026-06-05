@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/router/app_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../features/bookmark/providers/bookmark_provider.dart';
 import '../../../../shared/widgets/custom_appbar.dart';
@@ -13,7 +14,13 @@ class BookmarkScreen extends ConsumerWidget {
     final bookmarks = ref.watch(bookmarkProvider);
     final scheme = Theme.of(context).colorScheme;
 
-    return Scaffold(
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () async {
+        NavigationShellProvider.of(context).goBranch(0);
+        return false;
+      },
+      child: Scaffold(
       appBar: CustomAppBar(
         title: 'Saved',
         actions: [
@@ -80,7 +87,7 @@ class BookmarkScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(vertical: 8),
               itemCount: bookmarks.length,
               itemBuilder: (_, i) => Dismissible(
-                key: ValueKey(bookmarks[i].url ?? bookmarks[i].title),
+                key: ValueKey(bookmarks[i].url),
                 direction: DismissDirection.endToStart,
                 background: Container(
                   alignment: Alignment.centerRight,
@@ -99,6 +106,7 @@ class BookmarkScreen extends ConsumerWidget {
                 child: NewsCard(article: bookmarks[i]),
               ),
             ),
+    ),
     );
   }
 }

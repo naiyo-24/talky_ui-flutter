@@ -1,14 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/network/api_service.dart';
+import '../../../core/repository/json_repository.dart';
 import '../../../features/article/model/article_model.dart';
 import '../repository/home_repository.dart';
 
 // --- Providers ---
 
-final apiServiceProvider = Provider<ApiService>((ref) => ApiService());
-
 final homeRepositoryProvider = Provider<HomeRepository>(
-  (ref) => HomeRepository(ref.watch(apiServiceProvider)),
+  (ref) => HomeRepository(ref.watch(jsonRepositoryProvider)),
 );
 
 // Breaking news
@@ -40,12 +38,11 @@ class HomeNewsNotifier extends StateNotifier<HomeNewsState> {
       );
       if (!mounted) return;
 
-      final existingIds = state.articles.map((a) => a.url ?? a.title ?? '').toSet();
+      final existingIds = state.articles.map((a) => a.id).toSet();
       final uniqueNewArticles = <ArticleModel>[];
       for (final a in newArticles) {
-        final id = a.url ?? a.title ?? '';
-        if (id.isNotEmpty && !existingIds.contains(id)) {
-          existingIds.add(id);
+        if (a.id.isNotEmpty && !existingIds.contains(a.id)) {
+          existingIds.add(a.id);
           uniqueNewArticles.add(a);
         }
       }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../features/search/providers/search_provider.dart';
 import '../../../../shared/widgets/loading_widget.dart';
 import '../../../../shared/widgets/error_widget.dart';
@@ -35,7 +36,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final state = ref.watch(searchProvider);
     final scheme = Theme.of(context).colorScheme;
 
-    return Scaffold(
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () async {
+        NavigationShellProvider.of(context).goBranch(0);
+        return false;
+      },
+      child: Scaffold(
       appBar: AppBar(
         title: TextField(
           controller: _controller,
@@ -95,6 +102,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           itemBuilder: (_, i) => NewsCard(article: state.results[i]),
         );
       }),
+    ),
     );
   }
 }

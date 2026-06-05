@@ -97,7 +97,7 @@ class _ParallaxCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => context.push(
-        '/article/${Uri.encodeComponent(article.url ?? '')}',
+        '/article/${Uri.encodeComponent(article.url)}',
         extra: article.toJson(),
       ),
       child: ClipRRect(
@@ -107,7 +107,7 @@ class _ParallaxCard extends StatelessWidget {
           children: [
             // Background image
             CachedNetworkImage(
-              imageUrl: article.urlToImage ?? '',
+              imageUrl: article.urlToImage,
               fit: BoxFit.cover,
               placeholder: (_, _) => Container(
                 color: const Color(0xFF1E1E2E),
@@ -149,7 +149,7 @@ class _ParallaxCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      article.category?.toUpperCase() ?? 'NEWS',
+                      article.category.isEmpty ? 'NEWS' : article.category.toUpperCase(),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 10,
@@ -160,7 +160,7 @@ class _ParallaxCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    article.title ?? '',
+                    article.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(

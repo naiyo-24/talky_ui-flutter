@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../features/settings/providers/theme_provider.dart';
 import '../../../../core/storage/hive_service.dart';
 import '../../../../shared/widgets/custom_appbar.dart';
@@ -13,7 +14,13 @@ class SettingsScreen extends ConsumerWidget {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Scaffold(
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () async {
+        NavigationShellProvider.of(context).goBranch(0);
+        return false;
+      },
+      child: Scaffold(
       appBar: const CustomAppBar(title: 'Settings'),
       body: ListView(
         children: [
@@ -67,6 +74,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ],
       ),
+    ),
     );
   }
 }

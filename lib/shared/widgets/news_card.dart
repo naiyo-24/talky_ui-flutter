@@ -22,7 +22,7 @@ class NewsCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () => context.push(
-        '/article/${Uri.encodeComponent(article.url ?? '')}',
+        '/article/${Uri.encodeComponent(article.url)}',
         extra: article.toJson(),
       ),
       child: Container(
@@ -49,11 +49,11 @@ class NewsCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (article.category != null)
+                    if (article.category.isNotEmpty)
                       _buildCategoryChip(context, scheme),
                     const SizedBox(height: 8),
                     Text(
-                      article.title ?? 'No Title',
+                      article.title.isEmpty ? 'No Title' : article.title,
                       maxLines: compact ? 2 : 3,
                       overflow: TextOverflow.ellipsis,
                       style: textTheme.titleMedium?.copyWith(
@@ -64,7 +64,7 @@ class NewsCard extends StatelessWidget {
                     if (!compact) ...[
                       const SizedBox(height: 6),
                       Text(
-                        article.description ?? '',
+                        article.description,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: textTheme.bodySmall?.copyWith(
@@ -87,9 +87,9 @@ class NewsCard extends StatelessWidget {
 
   Widget _buildImage(BuildContext context) {
     return Hero(
-      tag: article.url ?? article.title ?? '',
+      tag: article.url,
       child: CachedNetworkImage(
-        imageUrl: article.urlToImage ?? '',
+        imageUrl: article.urlToImage,
         height: 200,
         width: double.infinity,
         fit: BoxFit.cover,
@@ -119,7 +119,7 @@ class NewsCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        article.category?.toUpperCase() ?? '',
+        article.category.toUpperCase(),
         style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w700,
@@ -138,7 +138,7 @@ class NewsCard extends StatelessWidget {
         const SizedBox(width: 4),
         Expanded(
           child: Text(
-            article.source ?? 'Unknown Source',
+            article.source.isEmpty ? 'Unknown Source' : article.source,
             style: TextStyle(
               fontSize: 12,
               color: scheme.onSurface.withValues(alpha: 0.5),

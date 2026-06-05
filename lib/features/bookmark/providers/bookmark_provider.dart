@@ -13,8 +13,8 @@ class BookmarkNotifier extends StateNotifier<List<ArticleModel>> {
   bool isBookmarked(String url) => _repo.isBookmarked(url);
 
   Future<void> toggle(ArticleModel article) async {
-    if (_repo.isBookmarked(article.url ?? article.title ?? '')) {
-      await _repo.removeBookmark(article.url ?? article.title ?? '');
+    if (_repo.isBookmarked(article.url)) {
+      await _repo.removeBookmark(article.url);
     } else {
       await _repo.addBookmark(article);
     }

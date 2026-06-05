@@ -1,21 +1,24 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/network/api_service.dart';
+import '../../../core/repository/json_repository.dart';
 import '../../../features/article/model/article_model.dart';
-import '../../../features/home/providers/home_provider.dart';
 
 class SearchRepository {
-  SearchRepository(this._api);
-  final ApiService _api;
+  SearchRepository(this._jsonRepo);
+  final JsonRepository _jsonRepo;
 
-  Future<List<ArticleModel>> search(String query, {int page = 1}) async {
-    final data = await _api.searchArticles(query: query, page: page);
-    return (data['articles'] as List<dynamic>)
-        .map((e) => ArticleModel.fromJson(e as Map<String, dynamic>))
-        .where((a) => a.title != null && a.title != '[Removed]')
-        .toList();
+  Future<List<ArticleModel>> searchArticles(String query) async {
+    final all = await _jsonRepo.fetchAllArticles();
+    final lowerQuery = query.toLowerCase();
+    return all.where((a) {
+      final titleBnMatch = a.titleBn.toLowerCase().contains(lowerQuery);
+      final titleEnMatch = a.titleEn.toLowerCase().contains(lowerQuery);
+      final distMatch = a.district.toLowerCase().contains(lowerQuery);
+      final catMatch = a.category.toLowerCase().contains(lowerQuery);
+      return titleBnMatch || titleEnMatch || distMatch || catMatch;
+    }).toList();
   }
 }
 
 final searchRepositoryProvider = Provider<SearchRepository>(
-  (ref) => SearchRepository(ref.watch(apiServiceProvider)),
+  (ref) => SearchRepository(ref.watch(jsonRepositoryProvider)),
 );

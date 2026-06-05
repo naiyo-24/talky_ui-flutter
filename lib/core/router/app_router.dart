@@ -5,9 +5,12 @@ import '../../features/splash/presentation/splash_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/home/presentation/screens/category_screen.dart';
 import '../../features/article/presentation/screens/article_detail_screen.dart';
+import '../../features/videos/presentation/videos_screen.dart';
 import '../../features/search/presentation/search_screen.dart';
 import '../../features/bookmark/presentation/bookmark_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
+import '../../features/language/presentation/language_screen.dart';
+import '../../features/district/presentation/district_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -19,36 +22,73 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'splash',
         builder: (context, state) => const SplashScreen(),
       ),
-      ShellRoute(
-        builder: (context, state, child) => ScaffoldWithBottomNav(child: child),
-        routes: [
-          GoRoute(
-            path: '/home',
-            name: 'home',
-            builder: (context, state) => const HomeScreen(),
+      GoRoute(
+        path: '/language',
+        name: 'language',
+        builder: (context, state) => const LanguageScreen(),
+      ),
+      GoRoute(
+        path: '/district',
+        name: 'district',
+        builder: (context, state) => const DistrictScreen(),
+      ),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return ScaffoldWithBottomNav(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/home',
+                name: 'home',
+                builder: (context, state) => const HomeScreen(),
+              ),
+              GoRoute(
+                path: '/category/:id',
+                name: 'category',
+                builder: (context, state) {
+                  final category = state.pathParameters['id'] ?? 'Top';
+                  return CategoryScreen(category: category);
+                },
+              ),
+            ],
           ),
-          GoRoute(
-            path: '/category/:id',
-            name: 'category',
-            builder: (context, state) {
-              final category = state.pathParameters['id'] ?? 'Top';
-              return CategoryScreen(category: category);
-            },
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/videos',
+                name: 'videos',
+                builder: (context, state) => const VideosScreen(),
+              ),
+            ],
           ),
-          GoRoute(
-            path: '/search',
-            name: 'search',
-            builder: (context, state) => const SearchScreen(),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/search',
+                name: 'search',
+                builder: (context, state) => const SearchScreen(),
+              ),
+            ],
           ),
-          GoRoute(
-            path: '/bookmarks',
-            name: 'bookmarks',
-            builder: (context, state) => const BookmarkScreen(),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/bookmarks',
+                name: 'bookmarks',
+                builder: (context, state) => const BookmarkScreen(),
+              ),
+            ],
           ),
-          GoRoute(
-            path: '/settings',
-            name: 'settings',
-            builder: (context, state) => const SettingsScreen(),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/settings',
+                name: 'settings',
+                builder: (context, state) => const SettingsScreen(),
+              ),
+            ],
           ),
         ],
       ),
@@ -65,46 +105,67 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 });
 
 class ScaffoldWithBottomNav extends StatelessWidget {
-  const ScaffoldWithBottomNav({super.key, required this.child});
-  final Widget child;
+  const ScaffoldWithBottomNav({super.key, required this.navigationShell});
+  final StatefulNavigationShell navigationShell;
 
   static const _tabs = [
-    (icon: Icons.home_rounded, label: 'Home', path: '/home'),
-    (icon: Icons.search_rounded, label: 'Search', path: '/search'),
-    (icon: Icons.bookmark_rounded, label: 'Saved', path: '/bookmarks'),
-    (icon: Icons.settings_rounded, label: 'Settings', path: '/settings'),
+    (icon: Icons.home_rounded, label: 'Home'),
+    (icon: Icons.play_circle_fill_rounded, label: 'Reels'),
+    (icon: Icons.search_rounded, label: 'Search'),
+    (icon: Icons.bookmark_rounded, label: 'Saved'),
+    (icon: Icons.settings_rounded, label: 'Settings'),
   ];
 
-  int _currentIndex(BuildContext context) {
-    final location = GoRouterState.of(context).matchedLocation;
-    if (location.startsWith('/search')) return 1;
-    if (location.startsWith('/bookmarks')) return 2;
-    if (location.startsWith('/settings')) return 3;
-    return 0;
+  void _onTap(BuildContext context, int index) {
+    navigationShell.goBranch(
+      index,
+      initialLocation: index == navigationShell.currentIndex,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final idx = _currentIndex(context);
     final scheme = Theme.of(context).colorScheme;
-    return Scaffold(
-      body: child,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: idx,
-        onDestinationSelected: (i) => context.go(_tabs[i].path),
-        backgroundColor: scheme.surface,
-        elevation: 0,
-        indicatorColor: scheme.primary.withValues(alpha: 0.15),
-        destinations: _tabs
-            .map(
-              (t) => NavigationDestination(
-                icon: Icon(t.icon),
-                label: t.label,
-              ),
-            )
-            .toList(),
+    return NavigationShellProvider(
+      shell: navigationShell,
+      child: Scaffold(
+        body: navigationShell,
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: navigationShell.currentIndex,
+          onDestinationSelected: (i) => _onTap(context, i),
+          backgroundColor: scheme.surface,
+          elevation: 0,
+          indicatorColor: scheme.primary.withValues(alpha: 0.15),
+          destinations: _tabs
+              .map(
+                (t) => NavigationDestination(
+                  icon: Icon(t.icon),
+                  label: t.label,
+                ),
+              )
+              .toList(),
+        ),
       ),
     );
   }
 }
 
+class NavigationShellProvider extends InheritedWidget {
+  final StatefulNavigationShell shell;
+  const NavigationShellProvider({
+    super.key,
+    required this.shell,
+    required super.child,
+  });
+
+  static StatefulNavigationShell of(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<NavigationShellProvider>()!
+        .shell;
+  }
+
+  @override
+  bool updateShouldNotify(covariant NavigationShellProvider oldWidget) {
+    return shell != oldWidget.shell;
+  }
+}
