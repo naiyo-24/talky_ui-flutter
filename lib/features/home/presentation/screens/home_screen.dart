@@ -5,7 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../../core/constants/app_constants.dart';
+import "package:newsapp/core/constants/app_constants.dart";
 import '../../../../core/utils/helper.dart';
 import '../../../../core/storage/hive_service.dart';
 import '../../../../features/article/model/article_model.dart';
