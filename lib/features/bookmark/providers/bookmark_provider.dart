@@ -20,6 +20,11 @@ class BookmarkNotifier extends StateNotifier<List<ArticleModel>> {
     }
     _load();
   }
+
+  Future<void> clearAll() async {
+    await _repo.clearAllBookmarks();
+    _load();
+  }
 }
 
 final bookmarkProvider =

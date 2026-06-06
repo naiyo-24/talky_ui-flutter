@@ -46,4 +46,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectDistrict => 'Select District';
+
+  @override
+  String get reels => 'Reels';
+
+  @override
+  String get community => 'Community';
+
+  @override
+  String get savedNews => 'Saved News';
+
+  @override
+  String get polls => 'Polls';
+
+  @override
+  String get feedback => 'Public Feedback';
+
+  @override
+  String get localIssues => 'Local Issues';
+
+  @override
+  String get events => 'Events';
+
+  @override
+  String get exploreCategories => 'Explore Categories';
+
+  @override
+  String get viewAll => 'View All >';
+
+  @override
+  String get trendingTopics => 'Trending Topics';
+
+  @override
+  String get todaysPoll => 'Today\'s Poll';
+
+  @override
+  String get reportIssue => 'Report Local Issue';
+
+  @override
+  String get upcomingEvents => 'Upcoming Events';
 }

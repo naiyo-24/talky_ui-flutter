@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../model/video_model.dart';
 
 class VideoPlayerItem extends StatefulWidget {
@@ -17,65 +18,102 @@ class VideoPlayerItem extends StatefulWidget {
 }
 
 class _VideoPlayerItemState extends State<VideoPlayerItem> {
-  late YoutubePlayerController _controller;
-  bool _isInitialized = false;
+  YoutubePlayerController? _controller;
+  String _videoId = '';
 
   @override
   void initState() {
     super.initState();
-    final videoId = YoutubePlayer.convertUrlToId(widget.video.youtubeUrl) ?? '';
-    _controller = YoutubePlayerController(
-      initialVideoId: videoId,
-      flags: YoutubePlayerFlags(
-        autoPlay: widget.isFocused,
-        mute: false,
-        disableDragSeek: true,
+    _extractVideoId();
+    if (widget.isFocused) {
+      _initPlayer();
+    }
+  }
+
+  void _extractVideoId() {
+    final uri = Uri.tryParse(widget.video.youtubeUrl);
+    if (uri != null) {
+      if (uri.host.contains('youtu.be')) {
+        _videoId = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : '';
+      } else if (uri.host.contains('youtube.com')) {
+        if (uri.pathSegments.contains('shorts') || uri.pathSegments.contains('live') || uri.pathSegments.contains('embed')) {
+          final index = uri.pathSegments.indexWhere((s) => s == 'shorts' || s == 'live' || s == 'embed');
+          if (index != -1 && index + 1 < uri.pathSegments.length) {
+            _videoId = uri.pathSegments[index + 1];
+          }
+        } else {
+          _videoId = uri.queryParameters['v'] ?? '';
+        }
+      }
+    }
+  }
+
+  void _initPlayer() {
+    if (_videoId.isEmpty) return;
+    _controller = YoutubePlayerController.fromVideoId(
+      videoId: _videoId,
+      autoPlay: true,
+      params: const YoutubePlayerParams(
+        showControls: false,
+        showFullscreenButton: false,
         loop: true,
+        mute: false,
+        pointerEvents: PointerEvents.none,
       ),
     );
-    _isInitialized = true;
   }
 
   @override
   void didUpdateWidget(covariant VideoPlayerItem oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isFocused && !oldWidget.isFocused) {
-      _controller.play();
+      if (_controller == null) {
+        _initPlayer();
+      } else {
+        _controller!.playVideo();
+      }
     } else if (!widget.isFocused && oldWidget.isFocused) {
-      _controller.pause();
+      _controller?.pauseVideo();
     }
   }
 
   @override
-  void deactivate() {
-    _controller.pause();
-    super.deactivate();
-  }
-
-  @override
   void dispose() {
-    _controller.dispose();
+    _controller?.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_isInitialized) return const SizedBox.shrink();
-
     return Stack(
       fit: StackFit.expand,
       children: [
-        Center(
-          child: YoutubePlayer(
-            controller: _controller,
-            showVideoProgressIndicator: true,
-            progressIndicatorColor: Colors.red,
-            progressColors: const ProgressBarColors(
-              playedColor: Colors.red,
-              handleColor: Colors.redAccent,
+        // Show thumbnail when not focused or loading
+        if (!widget.isFocused || _controller == null)
+          CachedNetworkImage(
+            imageUrl: widget.video.thumbnail,
+            fit: BoxFit.cover,
+            errorWidget: (context, url, error) => const Center(
+              child: Icon(Icons.error, color: Colors.white),
+            ),
+          )
+        else
+          Center(
+            child: YoutubePlayer(
+              controller: _controller!,
+              aspectRatio: 16 / 9,
+              enableFullScreenOnVerticalDrag: false,
+              gestureRecognizers: const {},
             ),
           ),
+          
+        // Invisible shield to ensure the platform view (WebView) doesn't swallow swipe gestures
+        Positioned.fill(
+          child: Container(
+            color: Colors.transparent,
+          ),
         ),
+          
         // Gradient overlay for text readability
         Positioned(
           bottom: 0,

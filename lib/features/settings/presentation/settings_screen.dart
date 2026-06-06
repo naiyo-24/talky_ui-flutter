@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../features/settings/providers/theme_provider.dart';
 import '../../../../core/storage/hive_service.dart';
 import '../../../../shared/widgets/custom_appbar.dart';
+
+import '../../../../l10n/app_localizations.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -13,15 +16,16 @@ class SettingsScreen extends ConsumerWidget {
     final isDark = ref.watch(themeProvider);
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final loc = AppLocalizations.of(context)!;
 
-    // ignore: deprecated_member_use
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
         NavigationShellProvider.of(context).goBranch(0);
-        return false;
       },
       child: Scaffold(
-      appBar: const CustomAppBar(title: 'Settings'),
+      appBar: CustomAppBar(title: loc.settings),
       body: ListView(
         children: [
           _SectionHeader(title: 'Appearance'),
@@ -35,6 +39,23 @@ class SettingsScreen extends ConsumerWidget {
             value: isDark,
             onChanged: (_) => ref.read(themeProvider.notifier).toggle(),
             activeThumbColor: scheme.primary,
+          ),
+          ListTile(
+            leading: Icon(Icons.language_rounded, color: scheme.primary),
+            title: Text(loc.language),
+            subtitle: Text('Current: ${HiveService.language == 'bn' ? "বাংলা" : "English"}'),
+            onTap: () {
+              context.push('/language');
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.location_on_rounded, color: scheme.primary),
+            title: Text(loc.district),
+            subtitle: Text('Current: ${HiveService.district.isNotEmpty ? HiveService.district : "None"}'),
+            onTap: () {
+              // We push so they can come back to settings.
+              context.push('/district');
+            },
           ),
           const Divider(),
           _SectionHeader(title: 'Data & Storage'),
@@ -68,7 +89,7 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: Icon(Icons.newspaper_rounded, color: scheme.primary),
             title: const Text('Powered by'),
-            trailing: Text('NewsAPI.org', style: textTheme.bodyMedium?.copyWith(
+            trailing: Text('Naiyo24.org', style: textTheme.bodyMedium?.copyWith(
               color: scheme.onSurface.withValues(alpha: 0.5),
             )),
           ),

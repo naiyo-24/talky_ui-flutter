@@ -36,14 +36,25 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final state = ref.watch(searchProvider);
     final scheme = Theme.of(context).colorScheme;
 
-    // ignore: deprecated_member_use
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        _controller.clear();
+        ref.read(searchProvider.notifier).clear();
         NavigationShellProvider.of(context).goBranch(0);
-        return false;
       },
       child: Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () {
+            _focusNode.unfocus();
+            _controller.clear();
+            ref.read(searchProvider.notifier).clear();
+            NavigationShellProvider.of(context).goBranch(0);
+          },
+        ),
         title: TextField(
           controller: _controller,
           focusNode: _focusNode,
@@ -79,7 +90,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           return AppErrorWidget(message: state.error!);
         }
         if (state.query.isEmpty) {
-          return _EmptySearch();
+          return _EmptySearch(
+            onTopicTap: (topic) {
+              _controller.text = topic;
+              ref.read(searchProvider.notifier).search(topic);
+            },
+          );
         }
         if (state.results.isEmpty) {
           return Center(
@@ -108,6 +124,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 }
 
 class _EmptySearch extends StatelessWidget {
+  final ValueChanged<String> onTopicTap;
+  
+  const _EmptySearch({required this.onTopicTap});
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -131,14 +151,14 @@ class _EmptySearch extends StatelessWidget {
             runSpacing: 10,
             children: suggestions.asMap().entries.map((e) {
               return GestureDetector(
-                onTap: () {
-                  // Handled via SearchNotifier
-                },
+                onTap: () => onTopicTap(e.value),
                 child: Chip(
-                  label: Text(e.value),
-                  backgroundColor: scheme.surfaceContainerHighest,
+                  label: Text(e.value, style: TextStyle(color: scheme.onPrimaryContainer, fontWeight: FontWeight.w600)),
+                  backgroundColor: scheme.primaryContainer,
+                  side: BorderSide.none,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                   avatar: Icon(Icons.trending_up_rounded,
-                      size: 16, color: scheme.primary),
+                      size: 16, color: scheme.onPrimaryContainer),
                 ),
               ).animate().fadeIn(delay: (e.key * 80).ms);
             }).toList(),

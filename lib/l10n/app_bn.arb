@@ -11,5 +11,18 @@
   "bookmarks": "বুকমার্ক",
   "aboutApp": "অ্যাপ সম্পর্কে",
   "language": "ভাষা",
-  "selectDistrict": "জেলা নির্বাচন করুন"
+  "selectDistrict": "জেলা নির্বাচন করুন",
+  "reels": "রিলস",
+  "community": "কমিউনিটি",
+  "savedNews": "সংরক্ষিত খবর",
+  "polls": "ভোট",
+  "feedback": "পাবলিক মতামত",
+  "localIssues": "স্থানীয় সমস্যা",
+  "events": "ইভেন্ট",
+  "exploreCategories": "বিভাগ অন্বেষণ করুন",
+  "viewAll": "সবগুলো দেখুন >",
+  "trendingTopics": "ট্রেন্ডিং টপিকস",
+  "todaysPoll": "আজকের পোল",
+  "reportIssue": "স্থানীয় সমস্যা রিপোর্ট করুন",
+  "upcomingEvents": "আসন্ন ইভেন্ট"
 }

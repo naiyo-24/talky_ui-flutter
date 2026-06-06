@@ -59,7 +59,7 @@ class HomeNewsNotifier extends StateNotifier<HomeNewsState> {
       state = state.copyWith(
         isLoadingMore: false,
         error: e.toString(),
-        isInitial: false,
+        isInitial: state.articles.isEmpty, // Keep true if we have no articles so error shows!
       );
     }
   }

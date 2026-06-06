@@ -11,5 +11,18 @@
   "bookmarks": "Bookmarks",
   "aboutApp": "About App",
   "language": "Language",
-  "selectDistrict": "Select District"
+  "selectDistrict": "Select District",
+  "reels": "Reels",
+  "community": "Community",
+  "savedNews": "Saved News",
+  "polls": "Polls",
+  "feedback": "Public Feedback",
+  "localIssues": "Local Issues",
+  "events": "Events",
+  "exploreCategories": "Explore Categories",
+  "viewAll": "View All >",
+  "trendingTopics": "Trending Topics",
+  "todaysPoll": "Today's Poll",
+  "reportIssue": "Report Local Issue",
+  "upcomingEvents": "Upcoming Events"
 }

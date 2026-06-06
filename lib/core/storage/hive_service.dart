@@ -41,6 +41,10 @@ class HiveService {
     await bookmarkBox.delete(id);
   }
 
+  static Future<void> clearAllBookmarks() async {
+    await bookmarkBox.clear();
+  }
+
   // Offline Cache
   static Box<String> get cacheBox => Hive.box<String>(AppConstants.hiveBoxName);
 

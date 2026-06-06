@@ -8,6 +8,7 @@ class BookmarkRepository {
   Future<void> addBookmark(ArticleModel article) =>
       HiveService.addBookmark(article);
   Future<void> removeBookmark(String url) => HiveService.removeBookmark(url);
+  Future<void> clearAllBookmarks() => HiveService.clearAllBookmarks();
 }
 
 final bookmarkRepositoryProvider =

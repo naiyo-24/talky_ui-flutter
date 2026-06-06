@@ -175,6 +175,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select District'**
   String get selectDistrict;
+
+  /// No description provided for @reels.
+  ///
+  /// In en, this message translates to:
+  /// **'Reels'**
+  String get reels;
+
+  /// No description provided for @community.
+  ///
+  /// In en, this message translates to:
+  /// **'Community'**
+  String get community;
+
+  /// No description provided for @savedNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved News'**
+  String get savedNews;
+
+  /// No description provided for @polls.
+  ///
+  /// In en, this message translates to:
+  /// **'Polls'**
+  String get polls;
+
+  /// No description provided for @feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Public Feedback'**
+  String get feedback;
+
+  /// No description provided for @localIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Local Issues'**
+  String get localIssues;
+
+  /// No description provided for @events.
+  ///
+  /// In en, this message translates to:
+  /// **'Events'**
+  String get events;
+
+  /// No description provided for @exploreCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore Categories'**
+  String get exploreCategories;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View All >'**
+  String get viewAll;
+
+  /// No description provided for @trendingTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'Trending Topics'**
+  String get trendingTopics;
+
+  /// No description provided for @todaysPoll.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Poll'**
+  String get todaysPoll;
+
+  /// No description provided for @reportIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Local Issue'**
+  String get reportIssue;
+
+  /// No description provided for @upcomingEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Events'**
+  String get upcomingEvents;
 }
 
 class _AppLocalizationsDelegate

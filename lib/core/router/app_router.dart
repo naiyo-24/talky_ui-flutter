@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/splash/presentation/splash_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 import '../../features/home/presentation/screens/category_screen.dart';
+import '../../features/home/presentation/screens/all_categories_screen.dart';
 import '../../features/article/presentation/screens/article_detail_screen.dart';
 import '../../features/videos/presentation/videos_screen.dart';
 import '../../features/search/presentation/search_screen.dart';
 import '../../features/bookmark/presentation/bookmark_screen.dart';
+import '../../features/community/presentation/community_screen.dart';
+import '../../features/community/presentation/polls_screen.dart';
+import '../../features/community/presentation/feedback_screen.dart';
+import '../../features/community/presentation/local_issues_screen.dart';
+import '../../features/community/presentation/events_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/language/presentation/language_screen.dart';
 import '../../features/district/presentation/district_screen.dart';
@@ -21,6 +29,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/splash',
         name: 'splash',
         builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/bookmarks',
+        name: 'bookmarks',
+        builder: (context, state) => const BookmarkScreen(),
       ),
       GoRoute(
         path: '/language',
@@ -43,6 +56,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 path: '/home',
                 name: 'home',
                 builder: (context, state) => const HomeScreen(),
+              ),
+              GoRoute(
+                path: '/categories',
+                name: 'categories',
+                builder: (context, state) => const AllCategoriesScreen(),
               ),
               GoRoute(
                 path: '/category/:id',
@@ -75,9 +93,31 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/bookmarks',
-                name: 'bookmarks',
-                builder: (context, state) => const BookmarkScreen(),
+                path: '/community',
+                name: 'community',
+                builder: (context, state) => const CommunityScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'polls',
+                    name: 'polls',
+                    builder: (context, state) => const PollsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'feedback',
+                    name: 'feedback',
+                    builder: (context, state) => const FeedbackScreen(),
+                  ),
+                  GoRoute(
+                    path: 'issues',
+                    name: 'issues',
+                    builder: (context, state) => const LocalIssuesScreen(),
+                  ),
+                  GoRoute(
+                    path: 'events',
+                    name: 'events',
+                    builder: (context, state) => const EventsScreen(),
+                  ),
+                ],
               ),
             ],
           ),
@@ -108,14 +148,6 @@ class ScaffoldWithBottomNav extends StatelessWidget {
   const ScaffoldWithBottomNav({super.key, required this.navigationShell});
   final StatefulNavigationShell navigationShell;
 
-  static const _tabs = [
-    (icon: Icons.home_rounded, label: 'Home'),
-    (icon: Icons.play_circle_fill_rounded, label: 'Reels'),
-    (icon: Icons.search_rounded, label: 'Search'),
-    (icon: Icons.bookmark_rounded, label: 'Saved'),
-    (icon: Icons.settings_rounded, label: 'Settings'),
-  ];
-
   void _onTap(BuildContext context, int index) {
     navigationShell.goBranch(
       index,
@@ -126,24 +158,66 @@ class ScaffoldWithBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final loc = AppLocalizations.of(context)!;
+    
+    final tabs = [
+      (icon: Icons.home_rounded, label: loc.home),
+      (icon: Icons.play_circle_fill_rounded, label: loc.reels),
+      (icon: Icons.search_rounded, label: loc.search),
+      (icon: Icons.people_alt_rounded, label: loc.community),
+      (icon: Icons.settings_rounded, label: loc.settings),
+    ];
+
     return NavigationShellProvider(
       shell: navigationShell,
-      child: Scaffold(
-        body: navigationShell,
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: navigationShell.currentIndex,
-          onDestinationSelected: (i) => _onTap(context, i),
-          backgroundColor: scheme.surface,
-          elevation: 0,
-          indicatorColor: scheme.primary.withValues(alpha: 0.15),
-          destinations: _tabs
-              .map(
-                (t) => NavigationDestination(
-                  icon: Icon(t.icon),
-                  label: t.label,
-                ),
-              )
-              .toList(),
+      child: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
+          if (didPop) return;
+          
+          if (navigationShell.currentIndex != 0) {
+            navigationShell.goBranch(0);
+          } else {
+            final shouldExit = await showDialog<bool>(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Exit App'),
+                content: const Text('Are you sure you want to close the app?'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: const Text('Exit', style: TextStyle(color: Colors.red)),
+                  ),
+                ],
+              ),
+            );
+            
+            if (shouldExit == true) {
+              SystemNavigator.pop();
+            }
+          }
+        },
+        child: Scaffold(
+          body: navigationShell,
+          bottomNavigationBar: NavigationBar(
+            selectedIndex: navigationShell.currentIndex,
+            onDestinationSelected: (i) => _onTap(context, i),
+            backgroundColor: scheme.surface,
+            elevation: 0,
+            indicatorColor: scheme.primary.withValues(alpha: 0.15),
+            destinations: tabs
+                .map(
+                  (t) => NavigationDestination(
+                    icon: Icon(t.icon),
+                    label: t.label,
+                  ),
+                )
+                .toList(),
+          ),
         ),
       ),
     );
@@ -166,6 +240,6 @@ class NavigationShellProvider extends InheritedWidget {
 
   @override
   bool updateShouldNotify(covariant NavigationShellProvider oldWidget) {
-    return shell != oldWidget.shell;
+    return shell.currentIndex != oldWidget.shell.currentIndex;
   }
 }

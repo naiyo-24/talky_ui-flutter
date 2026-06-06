@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/router/app_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../features/bookmark/providers/bookmark_provider.dart';
 import '../../../../shared/widgets/custom_appbar.dart';
@@ -14,13 +13,7 @@ class BookmarkScreen extends ConsumerWidget {
     final bookmarks = ref.watch(bookmarkProvider);
     final scheme = Theme.of(context).colorScheme;
 
-    // ignore: deprecated_member_use
-    return WillPopScope(
-      onWillPop: () async {
-        NavigationShellProvider.of(context).goBranch(0);
-        return false;
-      },
-      child: Scaffold(
+    return Scaffold(
       appBar: CustomAppBar(
         title: 'Saved',
         actions: [
@@ -29,26 +22,24 @@ class BookmarkScreen extends ConsumerWidget {
               onPressed: () async {
                 final confirm = await showDialog<bool>(
                   context: context,
-                  builder: (_) => AlertDialog(
+                  builder: (dialogContext) => AlertDialog(
                     title: const Text('Clear All Bookmarks?'),
                     content: const Text(
                         'This will remove all your saved articles.'),
                     actions: [
                       TextButton(
-                        onPressed: () => Navigator.pop(context, false),
+                        onPressed: () => Navigator.pop(dialogContext, false),
                         child: const Text('Cancel'),
                       ),
                       FilledButton(
-                        onPressed: () => Navigator.pop(context, true),
+                        onPressed: () => Navigator.pop(dialogContext, true),
                         child: const Text('Clear'),
                       ),
                     ],
                   ),
                 );
                 if (confirm == true) {
-                  for (final a in bookmarks) {
-                    ref.read(bookmarkProvider.notifier).toggle(a);
-                  }
+                  ref.read(bookmarkProvider.notifier).clearAll();
                 }
               },
               child: const Text('Clear All'),
@@ -106,7 +97,6 @@ class BookmarkScreen extends ConsumerWidget {
                 child: NewsCard(article: bookmarks[i]),
               ),
             ),
-    ),
     );
   }
 }

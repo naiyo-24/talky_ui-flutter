@@ -9,6 +9,7 @@ import 'core/theme/dark_theme.dart';
 import 'core/storage/hive_service.dart';
 import 'core/storage/shared_pref_service.dart';
 import 'features/settings/providers/theme_provider.dart';
+import 'features/language/providers/language_provider.dart';
 
 // The locale is read from HiveService
 
@@ -30,7 +31,7 @@ class NewsApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = ref.watch(themeProvider);
     final router = ref.watch(appRouterProvider);
-    // final locale = ref.watch(languageProvider);
+    final localeString = ref.watch(languageProvider);
 
     return MaterialApp.router(
       title: 'NewsApp',
@@ -39,7 +40,7 @@ class NewsApp extends ConsumerWidget {
       darkTheme: DarkTheme.darkTheme,
       themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
       routerConfig: router,
-      locale: Locale(HiveService.language),
+      locale: Locale(localeString),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

@@ -38,7 +38,7 @@ class AppConstants {
     {'label': 'STARTUPS', 'emoji': '🚀'},
     {'label': 'ENTERTAINMENT', 'emoji': '🎬'},
     {'label': 'INTERNATIONAL', 'emoji': '🌍'},
-    {'label': 'AUTOMOBILE', 'emoji': '🚗'},
+    {'label': 'ASTRO', 'emoji': '🔮'},
     {'label': 'SCIENCE', 'emoji': '🔬'},
     {'label': 'TRAVEL', 'emoji': '✈️'},
     {'label': 'MISCELLANEOUS', 'emoji': '🧩'},
@@ -46,7 +46,7 @@ class AppConstants {
     {'label': 'EDUCATION', 'emoji': '🎓'},
     {'label': 'HEALTH & FITNESS', 'emoji': '❤️'},
     {'label': 'WEATHER', 'emoji': '⛅'},
-    {'label': 'SHARE MARKET', 'emoji': '🐂'},
+    {'label': 'SHARE MARKET', 'emoji': '📊'},
     {'label': 'PODCAST', 'emoji': '🎤'},
     {'label': 'VIDEO', 'emoji': '▶️'},
   ];

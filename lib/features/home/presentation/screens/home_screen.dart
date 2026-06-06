@@ -4,12 +4,17 @@ import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/utils/helper.dart';
+import '../../../../core/storage/hive_service.dart';
 import '../../../../features/article/model/article_model.dart';
 import '../../../../features/home/providers/home_provider.dart';
+import '../../../../core/repository/json_repository.dart';
 import '../../../../shared/widgets/loading_widget.dart';
 import '../../../../shared/widgets/error_widget.dart';
+import '../../../../core/router/app_router.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -21,10 +26,14 @@ class HomeScreen extends ConsumerWidget {
     final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: scheme.surface,
-      drawer: _buildDrawer(context, scheme),
+        backgroundColor: scheme.surface,
+        drawer: _buildDrawer(context, scheme),
       body: RefreshIndicator(
-        onRefresh: () => ref.read(homeNewsProvider.notifier).refresh(),
+        onRefresh: () async {
+          ref.invalidate(jsonRepositoryProvider);
+          ref.invalidate(breakingNewsProvider);
+          await ref.read(homeNewsProvider.notifier).refresh();
+        },
         color: const Color(0xFFE53935),
         child: CustomScrollView(
           slivers: [
@@ -59,25 +68,23 @@ class HomeScreen extends ConsumerWidget {
               actions: [
                 IconButton(
                   icon: Icon(Icons.search_rounded, color: scheme.onSurface),
-                  onPressed: () => context.push('/search'),
+                  onPressed: () => context.go('/search'),
                 ),
                 IconButton(
                   icon: Icon(Icons.bookmark_border_rounded,
                       color: scheme.onSurface),
-                  onPressed: () => context.go('/bookmarks'),
+                  onPressed: () => context.push('/bookmarks'),
                 ),
                 const SizedBox(width: 4),
               ],
             ),
 
-            // ── Tab Row ───────────────────────────────────────────────────
-            SliverToBoxAdapter(
-              child: _TabBar(
-                selectedCategory: state.category,
-                onCategoryChanged: (cat) =>
-                    ref.read(homeNewsProvider.notifier).changeCategory(cat),
-              ),
+            // ── District Selector ─────────────────────────────────────────
+            const SliverToBoxAdapter(
+              child: _DistrictSelector(),
             ),
+
+
 
             // ── Hero Slider ───────────────────────────────────────────────
             SliverToBoxAdapter(
@@ -98,32 +105,14 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
 
-            // ── Latest News Header ──────────────────────────────────────
+            // ── Tab Row (Filters the list below) ───────────────────────────
             SliverToBoxAdapter(
               child: Padding(
-                padding:
-                    const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'LATEST NEWS',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 0.6,
-                          ),
-                    ),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        'View All >',
-                        style: TextStyle(
-                            color: Color(0xFFE53935),
-                            fontWeight: FontWeight.w700,
-                            fontSize: 13),
-                      ),
-                    ),
-                  ],
+                padding: const EdgeInsets.only(top: 8, bottom: 4),
+                child: _TabBar(
+                  selectedCategory: state.category,
+                  onCategoryChanged: (cat) =>
+                      ref.read(homeNewsProvider.notifier).changeCategory(cat),
                 ),
               ),
             ),
@@ -177,6 +166,7 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget _buildDrawer(BuildContext context, ColorScheme scheme) {
+    final loc = AppLocalizations.of(context)!;
     return Drawer(
       backgroundColor: scheme.surface,
       child: Column(
@@ -196,33 +186,50 @@ class HomeScreen extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.home_rounded),
-            title: const Text('Home', style: TextStyle(fontWeight: FontWeight.w600)),
+            title: Text(loc.home, style: const TextStyle(fontWeight: FontWeight.w600)),
             onTap: () {
               context.pop(); // close drawer
+              NavigationShellProvider.of(context).goBranch(0);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.play_circle_fill_rounded),
+            title: Text(loc.reels, style: const TextStyle(fontWeight: FontWeight.w600)),
+            onTap: () {
+              context.pop();
+              NavigationShellProvider.of(context).goBranch(1);
             },
           ),
           ListTile(
             leading: const Icon(Icons.search_rounded),
-            title: const Text('Search', style: TextStyle(fontWeight: FontWeight.w600)),
+            title: Text(loc.search, style: const TextStyle(fontWeight: FontWeight.w600)),
             onTap: () {
               context.pop();
-              context.push('/search');
+              NavigationShellProvider.of(context).goBranch(2);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.people_alt_rounded),
+            title: Text(loc.community, style: const TextStyle(fontWeight: FontWeight.w600)),
+            onTap: () {
+              context.pop();
+              NavigationShellProvider.of(context).goBranch(3);
             },
           ),
           ListTile(
             leading: const Icon(Icons.bookmark_rounded),
-            title: const Text('Saved News', style: TextStyle(fontWeight: FontWeight.w600)),
+            title: Text(loc.savedNews, style: const TextStyle(fontWeight: FontWeight.w600)),
             onTap: () {
               context.pop();
-              context.go('/bookmarks');
+              context.push('/bookmarks');
             },
           ),
           ListTile(
             leading: const Icon(Icons.settings_rounded),
-            title: const Text('Settings', style: TextStyle(fontWeight: FontWeight.w600)),
+            title: Text(loc.settings, style: const TextStyle(fontWeight: FontWeight.w600)),
             onTap: () {
               context.pop();
-              context.go('/settings');
+              NavigationShellProvider.of(context).goBranch(4);
             },
           ),
           const Spacer(),
@@ -257,7 +264,15 @@ class _TabBar extends StatelessWidget {
         children: _tabs.map((tab) {
           final selected = selectedCategory == tab;
           return GestureDetector(
-            onTap: () => onCategoryChanged(tab),
+            onTap: () {
+              if (tab == 'Podcast') {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Podcasts coming soon!')),
+                );
+                return;
+              }
+              onCategoryChanged(tab);
+            },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -380,10 +395,24 @@ class _HeroCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.push(
-        '/article/${Uri.encodeComponent(article.url)}',
-        extra: article.toJson(),
-      ),
+      onTap: () async {
+        final urlStr = article.url.toLowerCase();
+        if (urlStr.contains('/video/') || urlStr.contains('/videos/') || urlStr.contains('youtube.com') || urlStr.contains('youtu.be')) {
+          final uri = Uri.tryParse(article.url);
+          if (uri != null) {
+            try {
+              await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
+            } catch (_) {
+              await launchUrl(uri, mode: LaunchMode.externalApplication);
+            }
+            return;
+          }
+        }
+        context.push(
+          '/article/${Uri.encodeComponent(article.url)}',
+          extra: article.toJson(),
+        );
+      },
       child: ClipRRect(
         borderRadius: BorderRadius.circular(18),
         child: Stack(
@@ -546,7 +575,7 @@ class _ExploreCategoriesSection extends StatelessWidget {
                     ),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () => context.push('/categories'),
                 child: const Text('View All >',
                     style: TextStyle(
                         color: Color(0xFFE53935),
@@ -556,16 +585,20 @@ class _ExploreCategoriesSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          GridView.builder(
-            padding: EdgeInsets.zero,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 5,
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-              childAspectRatio: 1.0,
-            ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final itemWidth = (constraints.maxWidth - (4 * 8)) / 5;
+              final itemHeight = itemWidth < 80 ? 80.0 : itemWidth * 1.15;
+              return GridView.builder(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 5,
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: 8,
+                  childAspectRatio: itemWidth / itemHeight,
+                ),
             itemCount: cats.length,
             itemBuilder: (context, i) {
               final cat = cats[i];
@@ -589,16 +622,19 @@ class _ExploreCategoriesSection extends StatelessWidget {
                         cat['emoji'] as String,
                         style: const TextStyle(fontSize: 24),
                       ),
-                      const Spacer(),
-                      Text(
-                        (cat['label'] as String).toUpperCase(),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        style: TextStyle(
-                          fontSize: 8,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.1,
-                          color: Theme.of(context).colorScheme.onSurface,
+                      const SizedBox(height: 4),
+                      Flexible(
+                        child: Text(
+                          (cat['label'] as String).toUpperCase(),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 8,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.1,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                         ),
                       ),
                     ],
@@ -608,6 +644,8 @@ class _ExploreCategoriesSection extends StatelessWidget {
                     delay: Duration(milliseconds: 50 * i),
                     duration: 300.ms,
                   );
+                },
+              );
             },
           ),
           const SizedBox(height: 24),
@@ -630,10 +668,24 @@ class _LatestNewsCard extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
 
     return GestureDetector(
-      onTap: () => context.push(
-        '/article/${Uri.encodeComponent(article.url)}',
-        extra: article.toJson(),
-      ),
+      onTap: () async {
+        final urlStr = article.url.toLowerCase();
+        if (urlStr.contains('/video/') || urlStr.contains('/videos/') || urlStr.contains('youtube.com') || urlStr.contains('youtu.be')) {
+          final uri = Uri.tryParse(article.url);
+          if (uri != null) {
+            try {
+              await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
+            } catch (_) {
+              await launchUrl(uri, mode: LaunchMode.externalApplication);
+            }
+            return;
+          }
+        }
+        context.push(
+          '/article/${Uri.encodeComponent(article.url)}',
+          extra: article.toJson(),
+        );
+      },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         padding: const EdgeInsets.all(10),
@@ -751,5 +803,87 @@ class _LoadMoreTriggerState extends State<_LoadMoreTrigger> {
   }
 
   @override
-  Widget build(BuildContext context) => const SizedBox(height: 60);
+  Widget build(BuildContext context) => const SizedBox.shrink();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// District Selector
+// ─────────────────────────────────────────────────────────────────────────────
+class _DistrictSelector extends ConsumerStatefulWidget {
+  const _DistrictSelector();
+
+  @override
+  ConsumerState<_DistrictSelector> createState() => _DistrictSelectorState();
+}
+
+class _DistrictSelectorState extends ConsumerState<_DistrictSelector> {
+  late String _currentDistrict;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentDistrict = HiveService.district;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    
+    // Default options plus the selected one if not in list
+    final List<String> options = ['All Bengal', ...AppConstants.districts];
+    final displayValue = options.contains(_currentDistrict) || _currentDistrict.isEmpty
+        ? (_currentDistrict.isEmpty ? 'All Bengal' : _currentDistrict)
+        : _currentDistrict;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Row(
+        children: [
+          Icon(Icons.location_on_rounded, size: 18, color: scheme.primary),
+          const SizedBox(width: 8),
+          Text(
+            'Local News:',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: scheme.onSurface.withValues(alpha: 0.6),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: displayValue,
+                isDense: true,
+                icon: Icon(Icons.keyboard_arrow_down_rounded, size: 20, color: scheme.primary),
+                dropdownColor: scheme.surface,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: scheme.onSurface,
+                ),
+                items: options.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) async {
+                  if (newValue != null && newValue != displayValue) {
+                    setState(() {
+                      _currentDistrict = newValue == 'All Bengal' ? '' : newValue;
+                    });
+                    await HiveService.setDistrict(_currentDistrict);
+                    // Refresh news streams to apply the new filter
+                    ref.invalidate(breakingNewsProvider);
+                    ref.read(homeNewsProvider.notifier).refresh();
+                  }
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

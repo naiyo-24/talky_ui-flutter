@@ -134,10 +134,7 @@ class _RelatedArticles extends ConsumerWidget {
     final asyncArticles = ref.watch(relatedArticlesProvider(query));
     return asyncArticles.when(
       loading: () => const SliverToBoxAdapter(
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Center(child: CircularProgressIndicator()),
-        ),
+        child: SizedBox.shrink(),
       ),
       error: (_, _) => const SliverToBoxAdapter(child: SizedBox.shrink()),
       data: (articles) {
