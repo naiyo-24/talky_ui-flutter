@@ -175,6 +175,11 @@ class ScaffoldWithBottomNav extends StatelessWidget {
         onPopInvokedWithResult: (didPop, result) async {
           if (didPop) return;
           
+          if (context.canPop()) {
+            context.pop();
+            return;
+          }
+
           if (navigationShell.currentIndex != 0) {
             navigationShell.goBranch(0);
           } else {

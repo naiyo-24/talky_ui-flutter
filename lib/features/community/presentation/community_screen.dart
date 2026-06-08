@@ -23,6 +23,10 @@ class CommunityScreen extends StatelessWidget {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
+        if (context.canPop()) {
+          context.pop();
+          return;
+        }
         NavigationShellProvider.of(context).goBranch(0);
       },
       child: Scaffold(

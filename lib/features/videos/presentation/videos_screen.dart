@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/router/app_router.dart';
 import '../providers/videos_provider.dart';
 import 'widgets/video_player_item.dart';
@@ -24,6 +25,10 @@ class _VideosScreenState extends ConsumerState<VideosScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
+        if (context.canPop()) {
+          context.pop();
+          return;
+        }
         NavigationShellProvider.of(context).goBranch(0);
       },
       child: Scaffold(
