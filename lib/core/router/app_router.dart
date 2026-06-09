@@ -159,7 +159,7 @@ class ScaffoldWithBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final loc = AppLocalizations.of(context)!;
-    
+
     final tabs = [
       (icon: Icons.home_rounded, label: loc.home),
       (icon: Icons.play_circle_fill_rounded, label: loc.reels),
@@ -171,39 +171,62 @@ class ScaffoldWithBottomNav extends StatelessWidget {
     return NavigationShellProvider(
       shell: navigationShell,
       child: PopScope(
+        // Always intercept the back gesture — we handle all cases manually.
         canPop: false,
         onPopInvokedWithResult: (didPop, result) async {
           if (didPop) return;
-          
-          if (context.canPop()) {
-            context.pop();
+
+          // ── Priority 1: Pop within the current branch's navigator stack
+          //    (e.g. Category → AllCategories → Home, or Article → back).
+          final branchNavigator = navigationShell
+              .shellRouteContext.navigatorKey.currentState;
+          if (branchNavigator != null && branchNavigator.canPop()) {
+            branchNavigator.pop();
             return;
           }
 
+          // ── Priority 2: Not on Home tab → navigate to Home tab root.
+          //    This covers: Videos, Search, Community, Settings → Home.
           if (navigationShell.currentIndex != 0) {
-            navigationShell.goBranch(0);
-          } else {
-            final shouldExit = await showDialog<bool>(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: const Text('Exit App'),
-                content: const Text('Are you sure you want to close the app?'),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: const Text('Cancel'),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(true),
-                    child: const Text('Exit', style: TextStyle(color: Colors.red)),
-                  ),
-                ],
+            navigationShell.goBranch(0, initialLocation: true);
+            return;
+          }
+
+          // ── Priority 3: Already on Home tab root → confirm exit.
+          final shouldExit = await showDialog<bool>(
+            context: context,
+            barrierDismissible: true,
+            builder: (ctx) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-            );
-            
-            if (shouldExit == true) {
-              SystemNavigator.pop();
-            }
+              title: const Text(
+                'Exit App?',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
+              content: const Text(
+                'Are you sure you want to close the app?',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(false),
+                  child: const Text('Stay'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(true),
+                  child: const Text(
+                    'Exit',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              ],
+            ),
+          );
+
+          if (shouldExit == true) {
+            // Cleanly removes this Activity from the Android back stack
+            // without killing the process — respects launchMode="singleTop".
+            SystemNavigator.pop();
           }
         },
         child: Scaffold(
