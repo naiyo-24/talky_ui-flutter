@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/storage/hive_service.dart';
+import '../../../core/utils/location_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -14,15 +15,24 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      if (mounted) {
-        if (HiveService.isFirstLaunch) {
-          context.go('/language');
-        } else {
-          context.go('/home');
-        }
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    // Automatically fetch the location on startup
+    final location = await LocationService.fetchUserLocation();
+    await HiveService.setDistrict(location);
+
+    // Wait for the splash animation to finish (1.5 seconds)
+    await Future.delayed(const Duration(milliseconds: 1500));
+
+    if (mounted) {
+      if (HiveService.isFirstLaunch) {
+        context.go('/language');
+      } else {
+        context.go('/home');
       }
-    });
+    }
   }
 
   @override
