@@ -10,7 +10,7 @@ import '../../features/home/presentation/screens/all_categories_screen.dart';
 import '../../features/article/presentation/screens/article_detail_screen.dart';
 import '../../features/videos/presentation/videos_screen.dart';
 import '../../features/search/presentation/search_screen.dart';
-import '../../features/bookmark/presentation/bookmark_screen.dart';
+import '../../features/notifications/presentation/notifications_screen.dart';
 import '../../features/community/presentation/community_screen.dart';
 import '../../features/community/presentation/polls_screen.dart';
 import '../../features/community/presentation/feedback_screen.dart';
@@ -31,9 +31,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SplashScreen(),
       ),
       GoRoute(
-        path: '/bookmarks',
-        name: 'bookmarks',
-        builder: (context, state) => const BookmarkScreen(),
+        path: '/notifications',
+        name: 'notifications',
+        builder: (context, state) => const NotificationsScreen(),
       ),
       GoRoute(
         path: '/language',
@@ -90,7 +90,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
-          StatefulShellBranch(
+          /* StatefulShellBranch(
             routes: [
               GoRoute(
                 path: '/community',
@@ -120,7 +120,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 ],
               ),
             ],
-          ),
+          ), */
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -162,9 +162,9 @@ class ScaffoldWithBottomNav extends StatelessWidget {
 
     final tabs = [
       (icon: Icons.home_rounded, label: loc.home),
-      (icon: Icons.play_circle_fill_rounded, label: loc.reels),
+      (icon: Icons.play_circle_fill_rounded, label: 'Live'),
       (icon: Icons.search_rounded, label: loc.search),
-      (icon: Icons.people_alt_rounded, label: loc.community),
+      // (icon: Icons.people_alt_rounded, label: loc.community),
       (icon: Icons.settings_rounded, label: loc.settings),
     ];
 

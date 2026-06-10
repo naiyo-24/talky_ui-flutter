@@ -3,7 +3,6 @@ class AppConstants {
 
   static const String appName = 'NewsApp';
   static const String hiveBoxName = 'news_box';
-  static const String bookmarkBoxName = 'bookmarks_box';
   static const String settingsBoxName = 'settings_box';
   static const String themePrefKey = 'is_dark_mode';
 
@@ -54,6 +53,19 @@ class AppConstants {
   ];
 
   static const List<Map<String, dynamic>> exploreCategories = [
+    {'label': 'POLITICS', 'emoji': '🎙️'},
+    {'label': 'ECONOMICS', 'emoji': '📈'},
+    {'label': 'TECH', 'emoji': '💻'},
+    {'label': 'ASTROLOGY', 'emoji': '🔮'},
+    {'label': 'MARKET', 'emoji': '📊'},
+    {'label': 'HEALTH', 'emoji': '❤️'},
+    {'label': 'EDUCATION', 'emoji': '🎓'},
+    {'label': 'WEATHER', 'emoji': '⛅'},
+  ];
+
+  /* 
+  // Commented out until next update
+  static const List<Map<String, dynamic>> exploreCategoriesOld = [
     {'label': 'INDIA', 'emoji': '🇮🇳'},
     {'label': 'WEST BENGAL', 'emoji': '🌉'},
     {'label': 'POLITICS', 'emoji': '🎙️'},
@@ -75,4 +87,5 @@ class AppConstants {
     {'label': 'PODCAST', 'emoji': '🎤'},
     {'label': 'VIDEO', 'emoji': '▶️'},
   ];
+  */
 }

@@ -143,13 +143,6 @@ class CompactNewsCard extends StatelessWidget {
               ),
             ),
 
-            // Bookmark icon
-            Padding(
-              padding: const EdgeInsets.only(top: 2),
-              child: Icon(Icons.bookmark_border_rounded,
-                  size: 20,
-                  color: scheme.onSurface.withValues(alpha: 0.35)),
-            ),
           ],
         ),
       ).animate().fadeIn(

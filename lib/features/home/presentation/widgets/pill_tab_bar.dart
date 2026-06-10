@@ -16,9 +16,9 @@ class PillTabBar extends StatelessWidget {
   static const _tabs = [
     ('Home', Icons.person_rounded),
     ('Trending', Icons.trending_up_rounded),
-    ('Latest', Icons.schedule_rounded),
-    ('Video', Icons.play_circle_rounded),
-    ('Podcast', Icons.mic_rounded),
+    // ('Latest', Icons.schedule_rounded),
+    // ('Video', Icons.play_circle_rounded),
+    // ('Podcast', Icons.mic_rounded),
   ];
 
   @override

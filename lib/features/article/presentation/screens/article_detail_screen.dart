@@ -5,7 +5,6 @@ import '../../../../features/article/model/article_model.dart';
 import '../../../../features/article/presentation/widgets/parallax_header.dart';
 import '../../../../features/article/presentation/widgets/article_body.dart';
 import '../../../../features/article/presentation/widgets/author_info.dart';
-import '../../../../features/bookmark/providers/bookmark_provider.dart';
 import '../../../../shared/widgets/news_card.dart';
 import '../../../../features/article/providers/article_provider.dart';
 
@@ -36,8 +35,6 @@ class _ArticleDetailScreenState extends ConsumerState<ArticleDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isBookmarked = ref.read(bookmarkProvider.notifier)
-        .isBookmarked(_article.url);
     final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -86,27 +83,6 @@ class _ArticleDetailScreenState extends ConsumerState<ArticleDetailScreen> {
           ),
           const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          ref.read(bookmarkProvider.notifier).toggle(_article);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(isBookmarked
-                  ? 'Removed from bookmarks'
-                  : 'Added to bookmarks'),
-              duration: const Duration(seconds: 2),
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-            ),
-          );
-        },
-        backgroundColor: scheme.primary,
-        child: Icon(
-          isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
-          color: Colors.white,
-        ),
       ),
     );
   }

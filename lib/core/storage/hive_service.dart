@@ -8,7 +8,6 @@ class HiveService {
   static Future<void> init() async {
     await Hive.initFlutter();
     Hive.registerAdapter(ArticleModelAdapter());
-    await Hive.openBox<ArticleModel>(AppConstants.bookmarkBoxName);
     await Hive.openBox<String>(AppConstants.hiveBoxName);
     await Hive.openBox<dynamic>(AppConstants.settingsBoxName);
   }
@@ -24,26 +23,6 @@ class HiveService {
 
   static bool get isFirstLaunch => settingsBox.get('firstLaunch', defaultValue: true) as bool;
   static Future<void> setFirstLaunch(bool value) => settingsBox.put('firstLaunch', value);
-
-  // Bookmarks
-  static Box<ArticleModel> get bookmarkBox =>
-      Hive.box<ArticleModel>(AppConstants.bookmarkBoxName);
-
-  static List<ArticleModel> getAllBookmarks() => bookmarkBox.values.toList();
-
-  static bool isBookmarked(String id) => bookmarkBox.containsKey(id);
-
-  static Future<void> addBookmark(ArticleModel article) async {
-    await bookmarkBox.put(article.id, article);
-  }
-
-  static Future<void> removeBookmark(String id) async {
-    await bookmarkBox.delete(id);
-  }
-
-  static Future<void> clearAllBookmarks() async {
-    await bookmarkBox.clear();
-  }
 
   // Offline Cache
   static Box<String> get cacheBox => Hive.box<String>(AppConstants.hiveBoxName);

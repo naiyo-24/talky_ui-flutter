@@ -48,7 +48,7 @@ class HomeAppBar extends StatelessWidget {
             IconButton(
               icon:
                   Icon(Icons.notifications_outlined, color: scheme.onSurface),
-              onPressed: () => context.push('/bookmarks'),
+              onPressed: () => context.push('/notifications'),
             ),
             Positioned(
               top: 8,

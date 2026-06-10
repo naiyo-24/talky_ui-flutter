@@ -54,8 +54,8 @@ class SettingsScreen extends ConsumerWidget {
           ),
           ListTile(
             leading: Icon(Icons.location_on_rounded, color: scheme.primary),
-            title: Text(loc.district),
-            subtitle: Text('Current: ${HiveService.district.isNotEmpty ? HiveService.district : "None"}'),
+            title: const Text('Location'),
+            subtitle: Text('Current: ${HiveService.district.isNotEmpty ? HiveService.district : "West Bengal"}'),
             onTap: () {
               // We push so they can come back to settings.
               context.push('/district');
@@ -84,16 +84,9 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(),
           _SectionHeader(title: 'About'),
           ListTile(
-            leading: Icon(Icons.info_outline_rounded, color: scheme.primary),
-            title: const Text('Version'),
-            trailing: Text('1.0.0', style: textTheme.bodyMedium?.copyWith(
-              color: scheme.onSurface.withValues(alpha: 0.5),
-            )),
-          ),
-          ListTile(
             leading: Icon(Icons.newspaper_rounded, color: scheme.primary),
             title: const Text('Powered by'),
-            trailing: Text('Naiyo24.org', style: textTheme.bodyMedium?.copyWith(
+            trailing: Text('Naiyo24 Pvt. Ltd', style: textTheme.bodyMedium?.copyWith(
               color: scheme.onSurface.withValues(alpha: 0.5),
             )),
           ),
