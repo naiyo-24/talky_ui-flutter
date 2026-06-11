@@ -128,7 +128,7 @@ class ScaffoldWithBottomNav extends StatelessWidget {
 
     final tabs = [
       (icon: Icons.home_rounded, label: loc.home),
-      (icon: Icons.play_circle_fill_rounded, label: 'Flas'),
+      (icon: Icons.play_circle_fill_rounded, label: 'Tbite'),
       (icon: Icons.people_alt_rounded, label: loc.community),
       (icon: Icons.settings_rounded, label: loc.settings),
     ];
