@@ -12,10 +12,6 @@ import '../../features/videos/presentation/videos_screen.dart';
 import '../../features/search/presentation/search_screen.dart';
 import '../../features/notifications/presentation/notifications_screen.dart';
 import '../../features/community/presentation/community_screen.dart';
-import '../../features/community/presentation/polls_screen.dart';
-import '../../features/community/presentation/feedback_screen.dart';
-import '../../features/community/presentation/local_issues_screen.dart';
-import '../../features/community/presentation/events_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/language/presentation/language_screen.dart';
 import '../../features/district/presentation/district_screen.dart';
@@ -87,30 +83,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 path: '/community',
                 name: 'community',
                 builder: (context, state) => const CommunityScreen(),
-                /*
-                routes: [
-                  GoRoute(
-                    path: 'polls',
-                    name: 'polls',
-                    builder: (context, state) => const PollsScreen(),
-                  ),
-                  GoRoute(
-                    path: 'feedback',
-                    name: 'feedback',
-                    builder: (context, state) => const FeedbackScreen(),
-                  ),
-                  GoRoute(
-                    path: 'issues',
-                    name: 'issues',
-                    builder: (context, state) => const LocalIssuesScreen(),
-                  ),
-                  GoRoute(
-                    path: 'events',
-                    name: 'events',
-                    builder: (context, state) => const EventsScreen(),
-                  ),
-                ],
-                */
+                // Sub-routes (polls, feedback, etc.) were removed as per user request
               ),
             ],
           ),

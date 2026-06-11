@@ -120,9 +120,13 @@ class HomeScreen extends ConsumerWidget {
             );
           }
 
-          // Every 3rd article gets a big card; the rest are compact
           final article = state.articles[index];
-          return index % 3 == 0
+          
+          // Deterministic pseudo-randomness based on the article's unique title.
+          // This gives a random feel (about 25% chance of a big card) without layout jumping.
+          final isBig = article.title.hashCode % 4 == 0;
+          
+          return isBig
               ? BigNewsCard(article: article, index: index)
               : CompactNewsCard(article: article, index: index);
         },
