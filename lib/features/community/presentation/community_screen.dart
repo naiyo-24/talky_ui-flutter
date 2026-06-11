@@ -1,25 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../auth/providers/auth_provider.dart';
+import '../../auth/presentation/auth_screen.dart';
 
-class CommunityScreen extends StatelessWidget {
+class CommunityScreen extends ConsumerWidget {
   const CommunityScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final scheme = Theme.of(context).colorScheme;
     final loc = AppLocalizations.of(context)!;
-    
-    /*
-    final items = [
-      {'title': loc.polls, 'icon': Icons.poll_rounded, 'color': Colors.blue, 'route': '/community/polls'},
-      {'title': loc.feedback, 'icon': Icons.rate_review_rounded, 'color': Colors.orange, 'route': '/community/feedback'},
-      {'title': loc.localIssues, 'icon': Icons.report_problem_rounded, 'color': Colors.red, 'route': '/community/issues'},
-      {'title': loc.events, 'icon': Icons.event_rounded, 'color': Colors.green, 'route': '/community/events'},
-    ];
-    */
+    final user = ref.watch(authProvider);
 
     return PopScope(
       canPop: false,
@@ -43,87 +38,125 @@ class CommunityScreen extends StatelessWidget {
           centerTitle: true,
           backgroundColor: scheme.surface,
           elevation: 0,
+          actions: [
+            if (user != null)
+              IconButton(
+                icon: const Icon(Icons.logout_rounded),
+                onPressed: () => ref.read(authProvider.notifier).logout(),
+                tooltip: 'Logout',
+              ),
+          ],
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.people_alt_rounded,
-                size: 80,
-                color: scheme.primary.withValues(alpha: 0.5),
-              ).animate().scale(delay: 200.ms, duration: 600.ms, curve: Curves.easeOutBack),
-              const SizedBox(height: 24),
-              Text(
-                'Coming Soon',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.2,
-                      color: scheme.onSurface,
-                    ),
-              ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2, end: 0),
-              const SizedBox(height: 16),
-              Text(
-                'We are building something awesome\nfor our community. Stay tuned!',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: scheme.onSurfaceVariant,
-                      height: 1.5,
-                    ),
-              ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.2, end: 0),
-            ],
-          ),
-        ),
-        /*
-        body: GridView.builder(
-          padding: const EdgeInsets.all(16),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 1.1,
-          ),
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[index];
-            return GestureDetector(
-              onTap: () => context.go(item['route'] as String),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: scheme.surfaceContainerHighest.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: scheme.outlineVariant),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+        body: user == null
+            ? const AuthScreen()
+            : _CommunityFeed(),
+        floatingActionButton: user != null && user.isOfficial
+            ? FloatingActionButton.extended(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Create Post feature coming soon!')),
+                  );
+                },
+                icon: const Icon(Icons.add),
+                label: const Text('Create Official Post'),
+                backgroundColor: scheme.primary,
+                foregroundColor: scheme.onPrimary,
+              ).animate().scale(delay: 200.ms, curve: Curves.easeOutBack)
+            : null,
+      ),
+    );
+  }
+}
+
+class _CommunityFeed extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    
+    // Dummy posts for read-only view
+    final dummyPosts = [
+      {
+        'author': 'City Police Dept.',
+        'designation': 'Police',
+        'content': 'Traffic advisory: Main Street will be closed tomorrow from 9 AM to 2 PM due to road repairs. Please use alternate routes.',
+        'time': '2 hours ago',
+      },
+      {
+        'author': 'Dist. Legal Services',
+        'designation': 'Lawyer',
+        'content': 'Free legal aid camp being organized this Sunday at the community hall. All citizens are welcome to attend for consultations.',
+        'time': '5 hours ago',
+      },
+      {
+        'author': 'Local News Network',
+        'designation': 'News Channel',
+        'content': 'Breaking: The new central park has been officially inaugurated by the Mayor. Open to public starting today!',
+        'time': '1 day ago',
+      },
+    ];
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: dummyPosts.length,
+      itemBuilder: (context, index) {
+        final post = dummyPosts[index];
+        return Card(
+          margin: const EdgeInsets.only(bottom: 16),
+          elevation: 1,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: (item['color'] as Color).withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        item['icon'] as IconData,
-                        size: 40,
-                        color: item['color'] as Color,
-                      ),
+                    CircleAvatar(
+                      backgroundColor: scheme.primaryContainer,
+                      child: Icon(Icons.verified, color: scheme.primary),
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      item['title'] as String,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            post['author']!,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                           ),
+                          Text(
+                            '${post['designation']} • ${post['time']}',
+                            style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 13),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ).animate().fadeIn(delay: (index * 100).ms).scale(begin: const Offset(0.9, 0.9));
-          },
-        ),
-        */
-      ),
+                const SizedBox(height: 16),
+                Text(
+                  post['content']!,
+                  style: const TextStyle(fontSize: 15, height: 1.4),
+                ),
+                const SizedBox(height: 16),
+                const Divider(),
+                // Read-only indicator for normal users
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Icon(Icons.visibility_rounded, size: 16, color: scheme.onSurfaceVariant),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Official Notice',
+                      style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 12, fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ).animate().fadeIn(delay: (index * 150).ms).slideY(begin: 0.1);
+      },
     );
   }
 }
