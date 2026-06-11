@@ -84,18 +84,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/search',
-                name: 'search',
-                builder: (context, state) => const SearchScreen(),
-              ),
-            ],
-          ),
-          /* StatefulShellBranch(
-            routes: [
-              GoRoute(
                 path: '/community',
                 name: 'community',
                 builder: (context, state) => const CommunityScreen(),
+                /*
                 routes: [
                   GoRoute(
                     path: 'polls',
@@ -118,9 +110,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     builder: (context, state) => const EventsScreen(),
                   ),
                 ],
+                */
               ),
             ],
-          ), */
+          ),
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -162,9 +155,8 @@ class ScaffoldWithBottomNav extends StatelessWidget {
 
     final tabs = [
       (icon: Icons.home_rounded, label: loc.home),
-      (icon: Icons.play_circle_fill_rounded, label: 'Live'),
-      (icon: Icons.search_rounded, label: loc.search),
-      // (icon: Icons.people_alt_rounded, label: loc.community),
+      (icon: Icons.play_circle_fill_rounded, label: 'Flas'),
+      (icon: Icons.people_alt_rounded, label: loc.community),
       (icon: Icons.settings_rounded, label: loc.settings),
     ];
 

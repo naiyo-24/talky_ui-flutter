@@ -4,8 +4,72 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/storage/hive_service.dart';
 import '../../../core/constants/app_constants.dart';
 
-class DistrictScreen extends StatelessWidget {
+class DistrictScreen extends StatefulWidget {
   const DistrictScreen({super.key});
+
+  @override
+  State<DistrictScreen> createState() => _DistrictScreenState();
+}
+
+class _DistrictScreenState extends State<DistrictScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _autoFetchLocation();
+  }
+
+  Future<void> _autoFetchLocation() async {
+    // Simulate a brief delay to show the fetching animation
+    await Future.delayed(const Duration(seconds: 2));
+    
+    final wasFirstLaunch = HiveService.isFirstLaunch;
+    
+    // Auto-set to West Bengal as requested
+    await HiveService.setDistrict("West Bengal");
+    await HiveService.setFirstLaunch(false);
+    
+    if (mounted) {
+      if (wasFirstLaunch) {
+        context.go('/home');
+      } else if (context.canPop()) {
+        context.pop();
+      } else {
+        context.go('/home');
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      backgroundColor: scheme.surface,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.location_on_rounded, size: 60, color: scheme.primary)
+                .animate(onPlay: (controller) => controller.repeat(reverse: true))
+                .scale(begin: const Offset(0.9, 0.9), end: const Offset(1.1, 1.1), duration: 800.ms),
+            const SizedBox(height: 24),
+            Text(
+              'Fetching Location...',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+            ).animate().fadeIn(delay: 200.ms),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/* 
+// FUTURE CONCEPT: Manual district selection
+class OldDistrictScreen extends StatelessWidget {
+  const OldDistrictScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -100,3 +164,4 @@ class DistrictScreen extends StatelessWidget {
     );
   }
 }
+*/

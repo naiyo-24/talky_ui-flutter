@@ -14,7 +14,7 @@ class AllCategoriesScreen extends StatelessWidget {
       backgroundColor: scheme.surface,
       appBar: AppBar(
         title: const Text(
-          'ALL TOPICS',
+          'CATEGORIES',
           style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: 1.0),
         ),
         centerTitle: true,

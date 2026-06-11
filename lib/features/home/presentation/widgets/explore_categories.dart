@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_constants.dart';
-
 const _kAccent = Color(0xFFE53935);
 
 /// "EXPLORE CATEGORIES" header + horizontally scrollable chip row.
