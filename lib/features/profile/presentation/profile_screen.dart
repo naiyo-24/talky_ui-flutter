@@ -125,9 +125,49 @@ class ProfileScreen extends ConsumerWidget {
   Widget _buildProfessionalSection(BuildContext context, ColorScheme scheme) {
     final status = HiveService.verificationStatus;
     
-    // Normal User - skip rendering
+    // Normal User - show apply card
     if (status == 'none') {
-      return const SizedBox.shrink();
+      return Container(
+        margin: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: scheme.surfaceContainerHighest.withValues(alpha: 0.3),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: scheme.outlineVariant),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.workspace_premium_rounded, color: scheme.primary, size: 24),
+                const SizedBox(width: 8),
+                Text(
+                  'Professional Account',
+                  style: TextStyle(color: scheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Apply for a professional dashboard to post news and access advanced features.',
+              style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 13),
+            ),
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: () {
+                context.push('/professional-verification');
+              },
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(double.infinity, 40),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              icon: const Icon(Icons.arrow_forward_rounded, size: 18),
+              label: const Text('Apply Now', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+            ),
+          ],
+        ),
+      );
     }
 
     return Column(
