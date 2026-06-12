@@ -12,9 +12,10 @@ import '../../features/videos/presentation/videos_screen.dart';
 import '../../features/search/presentation/search_screen.dart';
 import '../../features/notifications/presentation/notifications_screen.dart';
 import '../../features/community/presentation/community_screen.dart';
-import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/language/presentation/language_screen.dart';
 import '../../features/district/presentation/district_screen.dart';
+import '../../features/profile/presentation/profile_screen.dart';
+import '../../features/settings/presentation/settings_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -90,13 +91,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/settings',
-                name: 'settings',
-                builder: (context, state) => const SettingsScreen(),
+                path: '/profile',
+                name: 'profile',
+                builder: (context, state) => const ProfileScreen(),
               ),
             ],
           ),
         ],
+      ),
+      GoRoute(
+        path: '/settings',
+        name: 'settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
       GoRoute(
         path: '/article/:id',
@@ -130,7 +136,7 @@ class ScaffoldWithBottomNav extends StatelessWidget {
       (icon: Icons.home_rounded, label: loc.home),
       (icon: Icons.play_circle_fill_rounded, label: 'Tbite'),
       (icon: Icons.people_alt_rounded, label: loc.community),
-      (icon: Icons.settings_rounded, label: loc.settings),
+      (icon: Icons.person_outline_rounded, label: 'Profile'),
     ];
 
     return NavigationShellProvider(

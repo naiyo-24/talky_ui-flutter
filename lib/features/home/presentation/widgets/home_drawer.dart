@@ -99,11 +99,11 @@ class HomeDrawer extends StatelessWidget {
                   _NavTile(
                     icon: Icons.settings_rounded,
                     label: loc.settings,
-                    isActive: currentIndex == 3,
+                    isActive: false,
                     delay: 400,
                     onTap: () {
                       context.pop();
-                      NavigationShellProvider.of(context).goBranch(3);
+                      context.push('/settings');
                     },
                   ),
 
