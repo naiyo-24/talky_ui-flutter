@@ -1,36 +1,24 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../domain/models/user_model.dart';
+import '../../../../core/storage/hive_service.dart';
 
-class AuthNotifier extends StateNotifier<UserModel?> {
-  AuthNotifier() : super(null); // null means not logged in
-
-  void loginAsNormal(String name) {
-    state = UserModel(
-      id: 'user_${DateTime.now().millisecondsSinceEpoch}',
-      name: name,
-      role: UserRole.normal,
-    );
+class AuthNotifier extends Notifier<bool> {
+  @override
+  bool build() {
+    // Initial state is loaded directly from Hive
+    return HiveService.isAuthenticated;
   }
 
-  void loginAsOfficial({
-    required String name,
-    required String designation,
-    required String identityNumber,
-  }) {
-    state = UserModel(
-      id: 'official_${DateTime.now().millisecondsSinceEpoch}',
-      name: name,
-      role: UserRole.official,
-      designation: designation,
-      identityNumber: identityNumber,
-    );
+  Future<void> login() async {
+    await HiveService.setAuthenticated(true);
+    state = true;
   }
 
-  void logout() {
-    state = null;
+  Future<void> logout() async {
+    await HiveService.setAuthenticated(false);
+    state = false;
   }
 }
 
-final authProvider = StateNotifierProvider<AuthNotifier, UserModel?>((ref) {
+final authProvider = NotifierProvider<AuthNotifier, bool>(() {
   return AuthNotifier();
 });

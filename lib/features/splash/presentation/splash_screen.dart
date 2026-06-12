@@ -27,7 +27,9 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(milliseconds: 1500));
 
     if (mounted) {
-      if (HiveService.isFirstLaunch) {
+      if (!HiveService.isAuthenticated) {
+        context.go('/login');
+      } else if (HiveService.isFirstLaunch) {
         context.go('/language');
       } else {
         context.go('/home');

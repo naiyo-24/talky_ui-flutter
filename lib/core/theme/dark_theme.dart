@@ -9,6 +9,7 @@ class DarkTheme {
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
         seedColor: const Color(0xFFE53935),
+        primary: const Color(0xFFE53935),
         secondary: const Color(0xFFD32F2F),
         brightness: Brightness.dark,
         surface: const Color(0xFF1E1E2E),
@@ -58,6 +59,21 @@ class DarkTheme {
           borderSide: BorderSide.none,
         ),
         hintStyle: GoogleFonts.inter(color: Colors.grey.shade600),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        indicatorColor: const Color(0xFFE53935),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(color: Colors.white);
+          }
+          return IconThemeData(color: Colors.grey.shade400);
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return GoogleFonts.inter(color: const Color(0xFFE53935), fontWeight: FontWeight.bold);
+          }
+          return GoogleFonts.inter(color: Colors.grey.shade400, fontWeight: FontWeight.normal);
+        }),
       ),
     );
   }

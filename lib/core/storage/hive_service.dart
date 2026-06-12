@@ -24,6 +24,9 @@ class HiveService {
   static bool get isFirstLaunch => settingsBox.get('firstLaunch', defaultValue: true) as bool;
   static Future<void> setFirstLaunch(bool value) => settingsBox.put('firstLaunch', value);
 
+  static bool get isAuthenticated => settingsBox.get('isAuthenticated', defaultValue: false) as bool;
+  static Future<void> setAuthenticated(bool value) => settingsBox.put('isAuthenticated', value);
+
   // Offline Cache
   static Box<String> get cacheBox => Hive.box<String>(AppConstants.hiveBoxName);
 

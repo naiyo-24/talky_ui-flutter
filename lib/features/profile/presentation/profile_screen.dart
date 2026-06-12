@@ -6,6 +6,7 @@ import '../../../../features/settings/providers/theme_provider.dart';
 import '../../../../core/storage/hive_service.dart';
 import '../../../../shared/widgets/custom_appbar.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../auth/providers/auth_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -41,9 +42,8 @@ class ProfileScreen extends ConsumerWidget {
             SwitchListTile(
               title: const Text('Dark Mode'),
               subtitle: const Text('Switch between light and dark theme'),
-              secondary: Icon(
-                isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
-                color: scheme.primary,
+              secondary: _ProfileIcon(
+                icon: isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
               ),
               value: isDark,
               onChanged: (_) => ref.read(themeProvider.notifier).toggle(),
@@ -53,7 +53,7 @@ class ProfileScreen extends ConsumerWidget {
             // 3. Preferences Section
             const _SectionHeader(title: 'Preferences'),
             ListTile(
-              leading: Icon(Icons.language_rounded, color: scheme.primary),
+              leading: const _ProfileIcon(icon: Icons.language_rounded),
               title: Text(loc.language),
               subtitle: Text('Current: ${HiveService.language == 'bn' ? "বাংলা" : "English"}'),
               onTap: () {
@@ -61,7 +61,7 @@ class ProfileScreen extends ConsumerWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.location_on_rounded, color: scheme.primary),
+              leading: const _ProfileIcon(icon: Icons.location_on_rounded),
               title: const Text('Location'),
               subtitle: Text('Current: ${HiveService.district.isNotEmpty ? HiveService.district : "West Bengal"}'),
               onTap: () {
@@ -73,7 +73,7 @@ class ProfileScreen extends ConsumerWidget {
             // 4. Data & Storage
             const _SectionHeader(title: 'Data & Storage'),
             ListTile(
-              leading: Icon(Icons.delete_sweep_outlined, color: scheme.error),
+              leading: const _ProfileIcon(icon: Icons.delete_sweep_outlined, isError: false, isSolid: true),
               title: const Text('Clear Offline Cache'),
               subtitle: const Text('Removes cached news data'),
               onTap: () async {
@@ -95,10 +95,13 @@ class ProfileScreen extends ConsumerWidget {
             
             // Logout Button
             ListTile(
-              leading: Icon(Icons.logout_rounded, color: scheme.primary),
+              leading: const _ProfileIcon(icon: Icons.logout_rounded, isSolid: true),
               title: Text('Logout', style: TextStyle(color: scheme.primary, fontWeight: FontWeight.w600)),
-              onTap: () {
-                // TODO: Implement Logout Logic
+              onTap: () async {
+                await ref.read(authProvider.notifier).logout();
+                if (context.mounted) {
+                  context.go('/login');
+                }
               },
             ),
             
@@ -106,7 +109,7 @@ class ProfileScreen extends ConsumerWidget {
             // 5. About Section
             const _SectionHeader(title: 'About'),
             ListTile(
-              leading: Icon(Icons.newspaper_rounded, color: scheme.primary),
+              leading: const _ProfileIcon(icon: Icons.newspaper_rounded),
               title: const Text('Powered by'),
               trailing: Text('Naiyo24 Pvt. Ltd', style: textTheme.bodyMedium?.copyWith(
                 color: scheme.onSurface.withValues(alpha: 0.5),
@@ -137,6 +140,48 @@ class _SectionHeader extends StatelessWidget {
           letterSpacing: 1.2,
           color: Theme.of(context).colorScheme.primary,
         ),
+      ),
+    );
+  }
+}
+
+class _ProfileIcon extends StatelessWidget {
+  const _ProfileIcon({required this.icon, this.isError = false, this.isSolid = false});
+  final IconData icon;
+  final bool isError;
+  final bool isSolid;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    
+    if (isSolid) {
+      return Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: isError ? scheme.error : scheme.primary,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(icon, size: 18, color: Colors.white),
+      );
+    }
+
+    return Container(
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        color: isError 
+            ? scheme.error.withValues(alpha: 0.1) 
+            : scheme.primary.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Icon(
+        icon, 
+        size: 18, 
+        color: isError 
+            ? scheme.error 
+            : scheme.primary,
       ),
     );
   }

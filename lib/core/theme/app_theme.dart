@@ -13,6 +13,7 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
         seedColor: _primaryColor,
+        primary: _primaryColor,
         secondary: _secondaryColor,
         tertiary: _accentColor,
         brightness: Brightness.light,
@@ -57,6 +58,21 @@ class AppTheme {
           borderSide: BorderSide.none,
         ),
         hintStyle: GoogleFonts.inter(color: Colors.grey.shade400),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        indicatorColor: _primaryColor,
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(color: Colors.white);
+          }
+          return IconThemeData(color: Colors.grey.shade600);
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return GoogleFonts.inter(color: _primaryColor, fontWeight: FontWeight.bold);
+          }
+          return GoogleFonts.inter(color: Colors.grey.shade600, fontWeight: FontWeight.normal);
+        }),
       ),
       extensions: [
         _CustomColors(

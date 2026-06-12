@@ -17,11 +17,36 @@ import '../../features/district/presentation/district_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/auth/presentation/login_screen.dart';
+import '../../features/auth/presentation/otp_screen.dart';
+import '../../features/auth/presentation/professional_prompt_screen.dart';
+import '../../features/auth/presentation/professional_verification_screen.dart';
+import '../../features/auth/providers/auth_provider.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/splash',
     debugLogDiagnostics: true,
+    redirect: (context, state) {
+      final isAuthenticated = ref.read(authProvider);
+      final isSplash = state.uri.path == '/splash';
+      final isLogin = state.uri.path == '/login';
+      final isOtp = state.uri.path == '/otp';
+      final isProfessionalPrompt = state.uri.path == '/professional-prompt';
+      
+      // If the user is unauthenticated, they can only be on splash, login, or otp.
+      if (!isAuthenticated && !isSplash && !isLogin && !isOtp) {
+        return '/login';
+      }
+
+      // If the user is authenticated and trying to access the login page, redirect them to home.
+      // Notice we do NOT redirect if they are on /otp or /professional-prompt because
+      // the OtpScreen needs to manually push to /professional-prompt after verification.
+      if (isAuthenticated && isLogin) {
+        return '/home';
+      }
+
+      return null;
+    },
     routes: [
       GoRoute(
         path: '/splash',
@@ -47,6 +72,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/login',
         name: 'login',
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/otp',
+        name: 'otp',
+        builder: (context, state) => const OtpScreen(),
+      ),
+      GoRoute(
+        path: '/professional-prompt',
+        name: 'professional_prompt',
+        builder: (context, state) => const ProfessionalPromptScreen(),
+      ),
+      GoRoute(
+        path: '/professional-verification',
+        name: 'professional_verification',
+        builder: (context, state) => const ProfessionalVerificationScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -208,20 +248,68 @@ class ScaffoldWithBottomNav extends StatelessWidget {
         },
         child: Scaffold(
           body: navigationShell,
-          bottomNavigationBar: NavigationBar(
-            selectedIndex: navigationShell.currentIndex,
-            onDestinationSelected: (i) => _onTap(context, i),
-            backgroundColor: scheme.surface,
-            elevation: 0,
-            indicatorColor: scheme.primary.withValues(alpha: 0.15),
-            destinations: tabs
-                .map(
-                  (t) => NavigationDestination(
-                    icon: Icon(t.icon),
-                    label: t.label,
+          bottomNavigationBar: Container(
+            color: scheme.surface,
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).padding.bottom + 8,
+              top: 8,
+              left: 16,
+              right: 16,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: tabs.asMap().entries.map((entry) {
+                final i = entry.key;
+                final t = entry.value;
+                final isActive = i == navigationShell.currentIndex;
+                return GestureDetector(
+                  onTap: () => _onTap(context, i),
+                  behavior: HitTestBehavior.opaque,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeOutCubic,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isActive ? scheme.primary : Colors.transparent,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: isActive
+                                ? Colors.white.withValues(alpha: 0.2)
+                                : scheme.onSurface.withValues(alpha: 0.06),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(
+                            t.icon,
+                            size: 18,
+                            color: isActive
+                                ? Colors.white
+                                : scheme.onSurface.withValues(alpha: 0.65),
+                          ),
+                        ),
+                        if (isActive) ...[
+                          const SizedBox(width: 8),
+                          Text(
+                            t.label,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
-                )
-                .toList(),
+                );
+              }).toList(),
+            ),
           ),
         ),
       ),

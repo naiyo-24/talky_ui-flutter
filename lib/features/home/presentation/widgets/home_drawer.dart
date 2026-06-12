@@ -47,7 +47,7 @@ class HomeDrawer extends StatelessWidget {
                   ),
                   _NavTile(
                     icon: Icons.play_circle_fill_rounded,
-                    label: 'Live',
+                    label: 'Tbite',
                     isActive: currentIndex == 1,
                     delay: 50,
                     onTap: () {
@@ -56,8 +56,8 @@ class HomeDrawer extends StatelessWidget {
                     },
                   ),
                   _NavTile(
-                    icon: Icons.search_rounded,
-                    label: loc.search,
+                    icon: Icons.people_alt_rounded,
+                    label: loc.community,
                     isActive: currentIndex == 2,
                     delay: 100,
                     onTap: () {
@@ -190,31 +190,32 @@ class _NavTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
           color: isActive
-              ? _kAccent.withValues(alpha: 0.1)
+              ? _kAccent
               : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
-            // Active bar indicator
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              width: 3,
-              height: 22,
-              margin: const EdgeInsets.only(right: 12),
-              decoration: BoxDecoration(
-                color: isActive ? _kAccent : Colors.transparent,
-                borderRadius: BorderRadius.circular(2),
+            if (isActive)
+              Container(
+                width: 3,
+                height: 22,
+                margin: const EdgeInsets.only(right: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
+            if (!isActive)
+              const SizedBox(width: 15),
 
-            // Icon with tinted background when active
+            // Icon
             Container(
               width: 36,
               height: 36,
               decoration: BoxDecoration(
                 color: isActive
-                    ? _kAccent.withValues(alpha: 0.15)
+                    ? Colors.white.withValues(alpha: 0.2)
                     : scheme.onSurface.withValues(alpha: 0.06),
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -222,7 +223,7 @@ class _NavTile extends StatelessWidget {
                 icon,
                 size: 18,
                 color: isActive
-                    ? _kAccent
+                    ? Colors.white
                     : scheme.onSurface.withValues(alpha: 0.65),
               ),
             ),
@@ -237,7 +238,7 @@ class _NavTile extends StatelessWidget {
                   fontWeight:
                       isActive ? FontWeight.w700 : FontWeight.w500,
                   color: isActive
-                      ? _kAccent
+                      ? Colors.white
                       : scheme.onSurface.withValues(alpha: 0.85),
                 ),
               ),
