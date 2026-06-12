@@ -1,10 +1,14 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../../core/router/app_router.dart';
 import 'community_post_detail_screen.dart';
+import '../providers/community_provider.dart';
 
 // The exact red color from your drawer to maintain the red/white theme
 const _kAppRed = Color(0xFFE53935);
@@ -49,65 +53,16 @@ class _CommunityFeedState extends ConsumerState<_CommunityFeed> {
     'Government Employee'
   ];
 
-  final List<Map<String, dynamic>> _dummyPosts = [
-    {
-      'author': 'City Police Dept.',
-      'designation': 'Police',
-      'content': 'Traffic advisory: Main Street will be closed tomorrow from 9 AM to 2 PM due to road repairs. Please use alternate routes to avoid congestion.',
-      'time': '2 hours ago',
-      'views': '3.4k views',
-      'attachmentType': 'map',
-      'attachmentName': 'Route Diversion Map',
-    },
-    {
-      'author': 'Local News Network',
-      'designation': 'News Channel',
-      'content': 'Breaking: The new central park has been officially inaugurated by the Mayor today. Open to the public starting immediately! Enjoy the green spaces.',
-      'time': '5 hours ago',
-      'views': '8.1k views',
-    },
-    {
-      'author': 'City Municipal Corp.',
-      'designation': 'Government Employee',
-      'content': 'Water supply will be affected in the northern district this weekend due to major pipeline maintenance. We request citizens to store adequate water.',
-      'time': '1 day ago',
-      'views': '12.5k views',
-      'attachmentType': 'pdf',
-      'attachmentName': 'Official Notice Circular.pdf',
-    },
-    {
-      'author': 'Dist. Legal Services',
-      'designation': 'Lawyer',
-      'content': 'Free legal aid camp being organized this Sunday at the community hall. All citizens are welcome to attend for free consultations regarding property and civil rights.',
-      'time': '1 day ago',
-      'views': '2.1k views',
-    },
-    {
-      'author': 'State Health Board',
-      'designation': 'Government Employee',
-      'content': 'Upcoming vaccination drive for children under 5 will commence next week at all district hospitals. Please bring valid Aadhaar cards for registration.',
-      'time': '2 days ago',
-      'views': '5.6k views',
-      'attachmentType': 'pdf',
-      'attachmentName': 'Vaccine Schedule.pdf',
-    },
-    {
-      'author': 'Cyber Crime Unit',
-      'designation': 'Police',
-      'content': 'Alert: Beware of a new phishing scam asking for OTPs under the guise of electricity bill payments. Do NOT share your OTPs with anyone. We have registered 50+ complaints this week.',
-      'time': '3 days ago',
-      'views': '15.2k views',
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final loc = AppLocalizations.of(context)!;
+    
+    final posts = ref.watch(communityProvider);
 
     final filteredPosts = _selectedFilter == 'All'
-        ? _dummyPosts
-        : _dummyPosts.where((p) => p['designation'] == _selectedFilter).toList();
+        ? posts
+        : posts.where((p) => p['designation'] == _selectedFilter).toList();
 
     return CustomScrollView(
       slivers: [
@@ -277,12 +232,32 @@ class _OfficialPostCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
+              const SizedBox(height: 16),
+              if (post['headline'] != null && post['headline'].toString().isNotEmpty) ...[
+                Text(
+                  post['headline'],
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+              ],
               Text(
                 post['content']!,
                 style: const TextStyle(fontSize: 15, height: 1.5),
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
+              if (post['imagePath'] != null) ...[
+                const SizedBox(height: 12),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.file(
+                    File(post['imagePath']),
+                    height: 150,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ],
               
               // Simulate Attachment preview if it has one
               if (post['attachmentType'] != null) ...[

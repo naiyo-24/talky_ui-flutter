@@ -220,18 +220,7 @@ class ProfileScreen extends ConsumerWidget {
               const SizedBox(height: 12),
               FilledButton.icon(
                 onPressed: () {
-                  if (status == 'pending') {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Dashboard will be unlocked after approval.'),
-                        backgroundColor: Colors.orange,
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  } else {
-                    // Navigate to dashboard
-                    // context.push('/professional-dashboard');
-                  }
+                  context.push('/professional-dashboard');
                 },
                 style: FilledButton.styleFrom(
                   backgroundColor: Colors.white,

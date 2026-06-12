@@ -15,6 +15,8 @@ import '../../features/community/presentation/community_screen.dart';
 import '../../features/language/presentation/language_screen.dart';
 import '../../features/district/presentation/district_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
+import '../../features/profile/presentation/professional_dashboard_screen.dart';
+import '../../features/profile/presentation/create_professional_post_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/otp_screen.dart';
@@ -149,6 +151,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/settings',
         name: 'settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/professional-dashboard',
+        name: 'professional-dashboard',
+        builder: (context, state) => const ProfessionalDashboardScreen(),
+      ),
+      GoRoute(
+        path: '/create-professional-post',
+        name: 'create-professional-post',
+        builder: (context, state) => const CreateProfessionalPostScreen(),
       ),
       GoRoute(
         path: '/article/:id',
