@@ -8,8 +8,8 @@ class DarkTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF6C63FF),
-        secondary: const Color(0xFFFF6584),
+        seedColor: const Color(0xFFE53935),
+        secondary: const Color(0xFFD32F2F),
         brightness: Brightness.dark,
         surface: const Color(0xFF1E1E2E),
       ),
@@ -39,7 +39,7 @@ class DarkTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: const Color(0xFF2A2A3E),
-        selectedColor: const Color(0xFF6C63FF),
+        selectedColor: const Color(0xFFE53935),
         labelStyle: GoogleFonts.inter(
           fontSize: 13,
           fontWeight: FontWeight.w500,
