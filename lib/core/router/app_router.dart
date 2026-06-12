@@ -16,6 +16,7 @@ import '../../features/language/presentation/language_screen.dart';
 import '../../features/district/presentation/district_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
+import '../../features/auth/presentation/login_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -41,6 +42,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/district',
         name: 'district',
         builder: (context, state) => const DistrictScreen(),
+      ),
+      GoRoute(
+        path: '/login',
+        name: 'login',
+        builder: (context, state) => const LoginScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {

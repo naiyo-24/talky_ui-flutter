@@ -34,10 +34,7 @@ class ProfileScreen extends ConsumerWidget {
         body: ListView(
           padding: const EdgeInsets.only(bottom: 24),
           children: [
-            // 1. Authentication / Login Placeholder
-            _buildLoginPlaceholder(context),
-            
-            const SizedBox(height: 8),
+
 
             // 2. Appearance Section
             const _SectionHeader(title: 'Appearance'),
@@ -95,6 +92,17 @@ class ProfileScreen extends ConsumerWidget {
             ),
             
             const SizedBox(height: 8),
+            
+            // Logout Button
+            ListTile(
+              leading: Icon(Icons.logout_rounded, color: scheme.primary),
+              title: Text('Logout', style: TextStyle(color: scheme.primary, fontWeight: FontWeight.w600)),
+              onTap: () {
+                // TODO: Implement Logout Logic
+              },
+            ),
+            
+            const SizedBox(height: 8),
             // 5. About Section
             const _SectionHeader(title: 'About'),
             ListTile(
@@ -110,61 +118,7 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildLoginPlaceholder(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-        decoration: BoxDecoration(
-          color: scheme.primaryContainer.withValues(alpha: 0.3),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: scheme.primary.withValues(alpha: 0.3),
-            style: BorderStyle.solid,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: scheme.primary.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.login_rounded, size: 24, color: scheme.primary),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Login Architecture',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: scheme.primary,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Placeholder for auth code',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: scheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(Icons.arrow_forward_ios_rounded, size: 16, color: scheme.primary.withValues(alpha: 0.5)),
-          ],
-        ),
-      ),
-    );
-  }
+
 }
 
 class _SectionHeader extends StatelessWidget {
