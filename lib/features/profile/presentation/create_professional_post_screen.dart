@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../shared/widgets/custom_appbar.dart';
 import '../../community/providers/community_provider.dart';
+import '../../../../core/storage/hive_service.dart';
 
 class CreateProfessionalPostScreen extends ConsumerStatefulWidget {
   const CreateProfessionalPostScreen({super.key});
@@ -69,10 +70,11 @@ class _CreateProfessionalPostScreenState extends ConsumerState<CreateProfessiona
 
   void _submitPost() {
     if (_formKey.currentState?.validate() ?? false) {
+      final String profession = HiveService.userProfession.isNotEmpty ? HiveService.userProfession : 'Verified Profession';
       final newPost = {
         'id': DateTime.now().millisecondsSinceEpoch.toString(),
-        'author': 'My Verified Profile',
-        'designation': 'News Channel', // Dummy or could be fetched from user state
+        'author': profession,
+        'designation': profession,
         'headline': _headlineController.text,
         'content': _contentController.text,
         'imagePath': _selectedImage?.path,

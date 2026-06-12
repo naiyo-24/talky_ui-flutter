@@ -58,6 +58,7 @@ class _ProfessionalVerificationScreenState extends ConsumerState<ProfessionalVer
       
       // Save pending verification status
       HiveService.setVerificationStatus('pending');
+      HiveService.setUserProfession(_selectedProfession!);
 
       // Mock validation successful
       ScaffoldMessenger.of(context).showSnackBar(

@@ -31,6 +31,9 @@ class HiveService {
   static String get verificationStatus => settingsBox.get('verificationStatus', defaultValue: 'none') as String;
   static Future<void> setVerificationStatus(String value) => settingsBox.put('verificationStatus', value);
 
+  static String get userProfession => settingsBox.get('userProfession', defaultValue: '') as String;
+  static Future<void> setUserProfession(String value) => settingsBox.put('userProfession', value);
+
   // Offline Cache
   static Box<String> get cacheBox => Hive.box<String>(AppConstants.hiveBoxName);
 

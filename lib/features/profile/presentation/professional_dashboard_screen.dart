@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../shared/widgets/custom_appbar.dart';
 import '../../community/providers/community_provider.dart';
+import '../../../../core/storage/hive_service.dart';
 
 class ProfessionalDashboardScreen extends ConsumerWidget {
   const ProfessionalDashboardScreen({super.key});
@@ -14,7 +15,8 @@ class ProfessionalDashboardScreen extends ConsumerWidget {
     final allPosts = ref.watch(communityProvider);
     
     // Filter to only show my professional posts
-    final myPosts = allPosts.where((post) => post['author'] == 'My Verified Profile').toList();
+    final String profession = HiveService.userProfession.isNotEmpty ? HiveService.userProfession : 'Verified Profession';
+    final myPosts = allPosts.where((post) => post['author'] == profession).toList();
 
     return Scaffold(
       appBar: const CustomAppBar(title: 'Professional Dashboard'),
