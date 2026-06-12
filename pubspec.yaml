@@ -50,6 +50,7 @@ dependencies:
   flutter_gen: ^5.14.1
   youtube_player_iframe: ^6.0.2
   pinput: ^6.0.2
+  image_picker: ^1.2.2
 
 dev_dependencies:
   flutter_test:

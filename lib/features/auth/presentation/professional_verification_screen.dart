@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../shared/widgets/custom_appbar.dart';
+import '../../../../core/storage/hive_service.dart';
 
 class ProfessionalVerificationScreen extends ConsumerStatefulWidget {
   const ProfessionalVerificationScreen({super.key});
@@ -13,6 +16,9 @@ class ProfessionalVerificationScreen extends ConsumerStatefulWidget {
 
 class _ProfessionalVerificationScreenState extends ConsumerState<ProfessionalVerificationScreen> {
   final _formKey = GlobalKey<FormState>();
+  
+  File? _idImage;
+  final ImagePicker _picker = ImagePicker();
   
   String _selectedProfession = 'Police';
   final List<String> _professions = [
@@ -39,6 +45,20 @@ class _ProfessionalVerificationScreenState extends ConsumerState<ProfessionalVer
 
   void _verify() {
     if (_formKey.currentState?.validate() ?? false) {
+      if (_selectedProfession != 'News Channel' && _idImage == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Please upload your ID Card image'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        return;
+      }
+      
+      // Save pending verification status
+      HiveService.setVerificationStatus('pending');
+
       // Mock validation successful
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -48,6 +68,73 @@ class _ProfessionalVerificationScreenState extends ConsumerState<ProfessionalVer
         ),
       );
       context.go('/home');
+    }
+  }
+
+  void _showImageSourceActionSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        final scheme = Theme.of(context).colorScheme;
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.photo_library_rounded, color: scheme.primary),
+                title: const Text('Choose from Gallery'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.camera_alt_rounded, color: scheme.primary),
+                title: const Text('Take a Photo'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final XFile? pickedFile = await _picker.pickImage(
+        source: source,
+        imageQuality: 80, // Compress to save size
+      );
+      
+      if (pickedFile != null) {
+        final file = File(pickedFile.path);
+        int sizeInBytes = file.lengthSync();
+        double sizeInKb = sizeInBytes / 1024;
+        
+        if (sizeInKb > 100) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text('Image size exceeds 100 KB. Please select a smaller image.'),
+                backgroundColor: Theme.of(context).colorScheme.error,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+        } else {
+          setState(() {
+            _idImage = file;
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint("Error picking image: $e");
     }
   }
 
@@ -299,42 +386,70 @@ class _ProfessionalVerificationScreenState extends ConsumerState<ProfessionalVer
         ),
         const SizedBox(height: 8),
         InkWell(
-          onTap: () {
-            // TODO: Implement image picker
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Text('Image Picker will be implemented here'),
-                behavior: SnackBarBehavior.floating,
-                backgroundColor: scheme.primary,
-              ),
-            );
-          },
+          onTap: () => _showImageSourceActionSheet(context),
           borderRadius: BorderRadius.circular(16),
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 32),
+            padding: EdgeInsets.symmetric(vertical: _idImage != null ? 8 : 32, horizontal: 8),
             decoration: BoxDecoration(
               color: scheme.primaryContainer.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: scheme.primary.withValues(alpha: 0.3),
+                color: _idImage != null ? scheme.primary : scheme.primary.withValues(alpha: 0.3),
                 width: 2,
                 style: BorderStyle.solid,
               ),
             ),
-            child: Column(
-              children: [
-                Icon(Icons.cloud_upload_rounded, size: 48, color: scheme.primary),
-                const SizedBox(height: 12),
-                Text(
-                  'Tap to upload ID Card image',
-                  style: TextStyle(
-                    color: scheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w500,
+            child: _idImage != null 
+                ? Stack(
+                    alignment: Alignment.topRight,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.file(
+                          _idImage!,
+                          width: double.infinity,
+                          height: 150,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.all(8),
+                        decoration: const BoxDecoration(
+                          color: Colors.black54,
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.edit_rounded, color: Colors.white, size: 20),
+                          onPressed: () => _showImageSourceActionSheet(context),
+                          constraints: const BoxConstraints(),
+                          padding: const EdgeInsets.all(8),
+                        ),
+                      ),
+                    ],
+                  )
+                : Column(
+                    children: [
+                      Icon(Icons.cloud_upload_rounded, size: 48, color: scheme.primary),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Tap to upload ID Card image',
+                        style: TextStyle(
+                          color: scheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Max size: 100 KB\\nSupported formats: JPG, PNG, JPEG',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: scheme.onSurfaceVariant.withValues(alpha: 0.7),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
           ),
         ),
       ],

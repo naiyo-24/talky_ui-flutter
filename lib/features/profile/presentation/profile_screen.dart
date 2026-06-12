@@ -35,8 +35,9 @@ class ProfileScreen extends ConsumerWidget {
         body: ListView(
           padding: const EdgeInsets.only(bottom: 24),
           children: [
-
-
+            // Professional Section (Dynamic)
+            _buildProfessionalSection(context, scheme),
+            
             // 2. Appearance Section
             const _SectionHeader(title: 'Appearance'),
             SwitchListTile(
@@ -121,7 +122,132 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildProfessionalSection(BuildContext context, ColorScheme scheme) {
+    final status = HiveService.verificationStatus;
+    
+    // Normal User - skip rendering
+    if (status == 'none') {
+      return const SizedBox.shrink();
+    }
 
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (status == 'pending') ...[
+          // Pending Approval Banner
+          Container(
+            margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.orange.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.orange.withValues(alpha: 0.3), width: 1.5),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.pending_actions_rounded, color: Colors.orange, size: 28),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Verification Pending',
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange, fontSize: 16),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Your professional verification request is currently under review.',
+                        style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+
+        // Professional Dashboard Card (Shown for both pending and approved)
+        Container(
+          margin: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [scheme.primary, scheme.primary.withValues(alpha: 0.8)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: scheme.primary.withValues(alpha: 0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Icon(Icons.dashboard_customize_rounded, color: Colors.white, size: 24),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'Professional',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 10),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Professional Dashboard',
+                style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Upload news, manage posts, and view analytics',
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 12),
+              ),
+              const SizedBox(height: 12),
+              FilledButton.icon(
+                onPressed: () {
+                  if (status == 'pending') {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Dashboard will be unlocked after approval.'),
+                        backgroundColor: Colors.orange,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  } else {
+                    // Navigate to dashboard
+                    // context.push('/professional-dashboard');
+                  }
+                },
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: scheme.primary,
+                  minimumSize: const Size(double.infinity, 40),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                icon: const Icon(Icons.arrow_forward_rounded, size: 18),
+                label: const Text('Access Dashboard', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class _SectionHeader extends StatelessWidget {

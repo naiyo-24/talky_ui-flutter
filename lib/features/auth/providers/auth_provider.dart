@@ -15,6 +15,7 @@ class AuthNotifier extends Notifier<bool> {
 
   Future<void> logout() async {
     await HiveService.setAuthenticated(false);
+    await HiveService.setVerificationStatus('none');
     state = false;
   }
 }

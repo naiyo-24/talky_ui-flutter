@@ -27,6 +27,10 @@ class HiveService {
   static bool get isAuthenticated => settingsBox.get('isAuthenticated', defaultValue: false) as bool;
   static Future<void> setAuthenticated(bool value) => settingsBox.put('isAuthenticated', value);
 
+  // Verification Status: 'none', 'pending', 'approved'
+  static String get verificationStatus => settingsBox.get('verificationStatus', defaultValue: 'none') as String;
+  static Future<void> setVerificationStatus(String value) => settingsBox.put('verificationStatus', value);
+
   // Offline Cache
   static Box<String> get cacheBox => Hive.box<String>(AppConstants.hiveBoxName);
 
