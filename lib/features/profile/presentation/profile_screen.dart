@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../features/settings/providers/theme_provider.dart';
 import '../../../../core/storage/hive_service.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../../../../shared/widgets/custom_appbar.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -123,9 +124,12 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Widget _buildProfessionalSection(BuildContext context, ColorScheme scheme) {
-    final status = HiveService.verificationStatus;
-    
-    // Normal User - show apply card
+    return ValueListenableBuilder(
+      valueListenable: HiveService.settingsBox.listenable(keys: ['verificationStatus']),
+      builder: (context, box, _) {
+        final status = box.get('verificationStatus', defaultValue: 'none') as String;
+        
+        // Normal User - show apply card
     if (status == 'none') {
       return Container(
         margin: const EdgeInsets.fromLTRB(16, 16, 16, 16),
@@ -275,6 +279,8 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ),
       ],
+    );
+      },
     );
   }
 }

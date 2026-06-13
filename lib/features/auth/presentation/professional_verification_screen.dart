@@ -391,7 +391,7 @@ class _ProfessionalVerificationScreenState extends ConsumerState<ProfessionalVer
           borderRadius: BorderRadius.circular(16),
           child: Container(
             width: double.infinity,
-            padding: EdgeInsets.symmetric(vertical: _idImage != null ? 8 : 32, horizontal: 8),
+            padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 8),
             decoration: BoxDecoration(
               color: scheme.primaryContainer.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
@@ -402,30 +402,23 @@ class _ProfessionalVerificationScreenState extends ConsumerState<ProfessionalVer
               ),
             ),
             child: _idImage != null 
-                ? Stack(
-                    alignment: Alignment.topRight,
+                ? Column(
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.file(
-                          _idImage!,
-                          width: double.infinity,
-                          height: 150,
-                          fit: BoxFit.cover,
+                      const Icon(Icons.cloud_done_rounded, size: 56, color: Colors.green),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'ID Uploaded Successfully',
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(
-                          color: Colors.black54,
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.edit_rounded, color: Colors.white, size: 20),
-                          onPressed: () => _showImageSourceActionSheet(context),
-                          constraints: const BoxConstraints(),
-                          padding: const EdgeInsets.all(8),
-                        ),
+                      const SizedBox(height: 8),
+                      TextButton.icon(
+                        onPressed: () => _showImageSourceActionSheet(context),
+                        icon: const Icon(Icons.edit_rounded, size: 16),
+                        label: const Text('Change Image'),
                       ),
                     ],
                   )
