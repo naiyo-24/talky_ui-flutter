@@ -7,6 +7,7 @@ import 'package:image_cropper/image_cropper.dart';
 import '../../../../shared/widgets/custom_appbar.dart';
 import '../../community/providers/community_provider.dart';
 import '../../../../core/storage/hive_service.dart';
+import '../../../../shared/widgets/video_player_widget.dart';
 
 class CreateProfessionalPostScreen extends ConsumerStatefulWidget {
   const CreateProfessionalPostScreen({super.key});
@@ -19,37 +20,56 @@ class _CreateProfessionalPostScreenState extends ConsumerState<CreateProfessiona
   final _formKey = GlobalKey<FormState>();
   final _headlineController = TextEditingController();
   final _contentController = TextEditingController();
-  File? _selectedImage;
+  File? _selectedMedia;
+  bool _isVideo = false;
 
-  Future<void> _pickImage(ImageSource source) async {
+  Future<void> _pickMedia(ImageSource source, {bool isVideo = false}) async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: source);
-    if (pickedFile != null) {
-      final croppedFile = await ImageCropper().cropImage(
-        sourcePath: pickedFile.path,
-        uiSettings: [
-          AndroidUiSettings(
-            toolbarTitle: 'Crop & Align Image',
-            toolbarColor: Theme.of(context).colorScheme.primary,
-            toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: false,
-          ),
-          IOSUiSettings(
-            title: 'Crop & Align Image',
-          ),
-        ],
+    XFile? pickedFile;
+    
+    if (isVideo) {
+      pickedFile = await picker.pickVideo(
+        source: source,
+        maxDuration: source == ImageSource.camera ? const Duration(seconds: 60) : null,
       );
+    } else {
+      pickedFile = await picker.pickImage(source: source);
+    }
 
-      if (croppedFile != null) {
+    if (pickedFile != null) {
+      if (isVideo) {
         setState(() {
-          _selectedImage = File(croppedFile.path);
+          _selectedMedia = File(pickedFile!.path);
+          _isVideo = true;
         });
+      } else {
+        final croppedFile = await ImageCropper().cropImage(
+          sourcePath: pickedFile.path,
+          uiSettings: [
+            AndroidUiSettings(
+              toolbarTitle: 'Crop & Align Image',
+              toolbarColor: Theme.of(context).colorScheme.primary,
+              toolbarWidgetColor: Colors.white,
+              initAspectRatio: CropAspectRatioPreset.original,
+              lockAspectRatio: false,
+            ),
+            IOSUiSettings(
+              title: 'Crop & Align Image',
+            ),
+          ],
+        );
+
+        if (croppedFile != null) {
+          setState(() {
+            _selectedMedia = File(croppedFile.path);
+            _isVideo = false;
+          });
+        }
       }
     }
   }
 
-  void _showImageSourceBottomSheet() {
+  void _showMediaSourceBottomSheet() {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -60,10 +80,18 @@ class _CreateProfessionalPostScreenState extends ConsumerState<CreateProfessiona
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library_rounded),
-              title: const Text('Choose from Gallery'),
+              title: const Text('Choose Image from Gallery'),
               onTap: () {
                 Navigator.pop(context);
-                _pickImage(ImageSource.gallery);
+                _pickMedia(ImageSource.gallery, isVideo: false);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.video_library_rounded),
+              title: const Text('Choose Video from Gallery'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickMedia(ImageSource.gallery, isVideo: true);
               },
             ),
             ListTile(
@@ -71,7 +99,15 @@ class _CreateProfessionalPostScreenState extends ConsumerState<CreateProfessiona
               title: const Text('Take a Photo'),
               onTap: () {
                 Navigator.pop(context);
-                _pickImage(ImageSource.camera);
+                _pickMedia(ImageSource.camera, isVideo: false);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.videocam_rounded),
+              title: const Text('Record a Video (Max 60s)'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickMedia(ImageSource.camera, isVideo: true);
               },
             ),
           ],
@@ -96,7 +132,8 @@ class _CreateProfessionalPostScreenState extends ConsumerState<CreateProfessiona
         'designation': profession,
         'headline': _headlineController.text,
         'content': _contentController.text,
-        'imagePath': _selectedImage?.path,
+        'imagePath': !_isVideo ? _selectedMedia?.path : null,
+        'videoPath': _isVideo ? _selectedMedia?.path : null,
         'time': 'Just now',
         'views': '0 views',
       };
@@ -128,47 +165,59 @@ class _CreateProfessionalPostScreenState extends ConsumerState<CreateProfessiona
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Image Upload
+              // Media Upload
               GestureDetector(
-                onTap: _showImageSourceBottomSheet,
+                onTap: _showMediaSourceBottomSheet,
                 child: Container(
-                  height: 150,
+                  height: 200,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: scheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: scheme.outlineVariant),
-                    image: _selectedImage != null
+                    image: _selectedMedia != null && !_isVideo
                         ? DecorationImage(
-                            image: FileImage(_selectedImage!),
+                            image: FileImage(_selectedMedia!),
                             fit: BoxFit.cover,
                           )
                         : null,
                   ),
-                  child: _selectedImage == null
+                  child: _selectedMedia == null
                       ? Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.add_photo_alternate_rounded, size: 40, color: scheme.primary),
+                            Icon(Icons.perm_media_rounded, size: 40, color: scheme.primary),
                             const SizedBox(height: 8),
                             Text(
-                              'Tap to upload an image',
+                              'Tap to upload Image or Video',
                               style: TextStyle(color: scheme.onSurfaceVariant, fontWeight: FontWeight.w500),
                             ),
                           ],
                         )
-                      : Align(
-                          alignment: Alignment.topRight,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CircleAvatar(
-                              backgroundColor: Colors.black54,
-                              child: IconButton(
-                                icon: const Icon(Icons.close, color: Colors.white, size: 18),
-                                onPressed: () => setState(() => _selectedImage = null),
+                      : Stack(
+                          children: [
+                            if (_isVideo)
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: VideoPlayerWidget(videoPath: _selectedMedia!.path),
+                              ),
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.black54,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.close, color: Colors.white, size: 18),
+                                    onPressed: () => setState(() {
+                                      _selectedMedia = null;
+                                      _isVideo = false;
+                                    }),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
+                          ],
                         ),
                 ),
               ),

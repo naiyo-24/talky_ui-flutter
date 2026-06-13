@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../shared/widgets/custom_appbar.dart';
 import '../../community/providers/community_provider.dart';
 import '../../../../core/storage/hive_service.dart';
+import '../../../../shared/widgets/video_player_widget.dart';
 
 class ProfessionalDashboardScreen extends ConsumerWidget {
   const ProfessionalDashboardScreen({super.key});
@@ -101,6 +102,10 @@ class ProfessionalDashboardScreen extends ConsumerWidget {
                               fit: BoxFit.cover,
                             ),
                           ),
+                        ],
+                        if (post['videoPath'] != null) ...[
+                          const SizedBox(height: 12),
+                          VideoPlayerWidget(videoPath: post['videoPath']),
                         ],
                         const SizedBox(height: 12),
                         Row(

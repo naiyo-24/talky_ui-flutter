@@ -9,6 +9,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../core/router/app_router.dart';
 import 'community_post_detail_screen.dart';
 import '../providers/community_provider.dart';
+import '../../../../shared/widgets/video_player_widget.dart';
 
 // The exact red color from your drawer to maintain the red/white theme
 const _kAppRed = Color(0xFFE53935);
@@ -257,6 +258,10 @@ class _OfficialPostCard extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                 ),
+              ],
+              if (post['videoPath'] != null) ...[
+                const SizedBox(height: 12),
+                VideoPlayerWidget(videoPath: post['videoPath']),
               ],
               
               // Simulate Attachment preview if it has one

@@ -27,10 +27,10 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(milliseconds: 1500));
 
     if (mounted) {
-      if (!HiveService.isAuthenticated) {
-        context.go('/login');
-      } else if (HiveService.isFirstLaunch) {
+      if (HiveService.isFirstLaunch) {
         context.go('/language');
+      } else if (!HiveService.isAuthenticated) {
+        context.go('/login');
       } else {
         context.go('/home');
       }
@@ -60,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
             .shimmer(
               delay: 400.ms,
               duration: 1000.ms,
-              color: Colors.grey.withOpacity(0.3),
+              color: Colors.grey.withValues(alpha: 0.3),
             )
             // 4. Subtle continuous float/pulse until the screen transitions
             .then(delay: 100.ms)

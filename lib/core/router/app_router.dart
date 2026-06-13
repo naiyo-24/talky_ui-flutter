@@ -35,8 +35,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final isOtp = state.uri.path == '/otp';
       final isProfessionalPrompt = state.uri.path == '/professional-prompt';
       
-      // If the user is unauthenticated, they can only be on splash, login, or otp.
-      if (!isAuthenticated && !isSplash && !isLogin && !isOtp) {
+      final isLanguage = state.uri.path == '/language';
+      final isDistrict = state.uri.path == '/district';
+      
+      // If the user is unauthenticated, they can only be on splash, language, district, login, or otp.
+      if (!isAuthenticated && !isSplash && !isLanguage && !isDistrict && !isLogin && !isOtp) {
         return '/login';
       }
 

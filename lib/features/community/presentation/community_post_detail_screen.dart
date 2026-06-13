@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import '../../../../shared/widgets/video_player_widget.dart';
 
 class CommunityPostDetailScreen extends StatelessWidget {
   final Map<String, dynamic> post;
@@ -68,7 +70,27 @@ class CommunityPostDetailScreen extends StatelessWidget {
               post['content']!,
               style: const TextStyle(fontSize: 16, height: 1.6),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
+
+            // Media Preview
+            if (post['imagePath'] != null) ...[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.file(
+                  File(post['imagePath']),
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+            if (post['videoPath'] != null) ...[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: VideoPlayerWidget(videoPath: post['videoPath']),
+              ),
+              const SizedBox(height: 24),
+            ],
 
             // Attachment (if any)
             if (post['attachmentType'] != null) ...[
